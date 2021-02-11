@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations.map
 import com.mercadopago.android.px.addons.model.SecurityValidationData
+import com.mercadopago.android.px.internal.audio.AudioPlayer
 import com.mercadopago.android.px.internal.base.BaseState
 import com.mercadopago.android.px.internal.base.BaseViewModelWithState
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceEventHandler
@@ -268,6 +269,15 @@ internal class PayButtonViewModel(
                     }
                 }
             })
+        }
+    }
+
+    override fun onResultIconAnimation() {
+        state.paymentModel?.paymentResult?.let { it ->
+            when {
+                it.isApproved -> stateUILiveData.postValue(PlayResultAudio(AudioPlayer.Sound.SUCCESS))
+                it.isRejected -> stateUILiveData.postValue(PlayResultAudio(AudioPlayer.Sound.FAILURE))
+            }
         }
     }
 

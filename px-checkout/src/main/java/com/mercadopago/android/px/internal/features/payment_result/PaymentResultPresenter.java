@@ -80,7 +80,7 @@ import java.util.List;
     }
 
     @Override
-    public void attachView(final PaymentResult.View view) {
+    public void attachView(@NonNull final PaymentResult.View view) {
         super.attachView(view);
 
         if (paymentModel.getPaymentResult().isOffPayment()) {

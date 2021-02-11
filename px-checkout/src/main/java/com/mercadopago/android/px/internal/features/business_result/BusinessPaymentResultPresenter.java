@@ -45,7 +45,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
     }
 
     @Override
-    public void attachView(final BusinessPaymentResult.View view) {
+    public void attachView(@NonNull final BusinessPaymentResult.View view) {
         super.attachView(view);
         configureView();
     }

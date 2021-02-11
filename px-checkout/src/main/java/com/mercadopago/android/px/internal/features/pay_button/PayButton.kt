@@ -31,6 +31,7 @@ interface PayButton {
         fun onPostPaymentAction(postPaymentAction: PostPaymentAction)
         fun handleCongratsResult(resultCode: Int, data: Intent?)
         fun handleSecurityCodeResult(resultCode: Int, data: Intent?)
+        fun onResultIconAnimation()
     }
 
     interface Handler {

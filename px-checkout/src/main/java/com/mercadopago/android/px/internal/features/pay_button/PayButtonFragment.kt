@@ -18,6 +18,7 @@ import com.mercadopago.android.px.R
 import com.mercadopago.android.px.addons.BehaviourProvider
 import com.mercadopago.android.px.addons.internal.SecurityValidationHandler
 import com.mercadopago.android.px.addons.model.SecurityValidationData
+import com.mercadopago.android.px.internal.audio.AudioPlayer
 import com.mercadopago.android.px.internal.base.BaseFragment
 import com.mercadopago.android.px.internal.di.viewModel
 import com.mercadopago.android.px.internal.extensions.runIfNull
@@ -120,6 +121,7 @@ class PayButtonFragment : BaseFragment(), PayButton.View, SecurityValidationHand
             is UIResult.PaymentResult -> PaymentResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
             is UIResult.NoCongratsResult -> DummyResultActivity.start(this, REQ_CODE_CONGRATS, stateUI.model)
             is UIResult.CongratsPaymentModel -> PaymentCongrats.show(stateUI.model, this, REQ_CODE_CONGRATS)
+            is UIProgress.PlayResultAudio -> context?.let { AudioPlayer.play(it, stateUI.sound) }
         }
     }
 
@@ -179,6 +181,10 @@ class PayButtonFragment : BaseFragment(), PayButton.View, SecurityValidationHand
                 view.showSnackBar(getString(R.string.px_error_title), andesSnackbarAction = action)
             }
         }
+    }
+
+    override fun onResultIconAnimation() {
+        viewModel.onResultIconAnimation()
     }
 
     override fun onAnimationFinished() {

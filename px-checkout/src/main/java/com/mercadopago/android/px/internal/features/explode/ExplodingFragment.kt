@@ -242,6 +242,10 @@ class ExplodingFragment : Fragment() {
                 .setInterpolator(DecelerateInterpolator(2f))
                 .setDuration(resources.getInteger(R.integer.px_default_animation_time).toLong())
                 .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator?) {
+                        handler?.onResultIconAnimation()
+                    }
+
                     override fun onAnimationEnd(animation: Animator) {
                         animation.removeAllListeners()
                         explodeDecorator?.let {
@@ -362,6 +366,7 @@ class ExplodingFragment : Fragment() {
 
     interface Handler {
         fun getParentView(): View
+        fun onResultIconAnimation()
         fun onAnimationFinished()
     }
 }
