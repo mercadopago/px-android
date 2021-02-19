@@ -47,6 +47,7 @@ import com.mercadopago.android.px.internal.repository.PaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
+import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.services.CongratsService;
 import com.mercadopago.android.px.internal.services.GatewayService;
 import com.mercadopago.android.px.internal.services.InstructionsClient;
@@ -200,7 +201,7 @@ public final class Session extends ApplicationModule {
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
             checkoutRepository = new CheckoutRepositoryImpl(paymentSettings, getExperimentsRepository(),
                 configurationModule.getDisabledPaymentMethodRepository(), getMercadoPagoESC(),
-                networkModule.getRetrofitClient().create(com.mercadopago.android.px.internal.services.CheckoutService.class),
+                networkModule.getRetrofitClient().create(CheckoutService.class),
                 configurationModule.getTrackingRepository(), getTracker(),
                 getPayerPaymentMethodRepository(), getExpressMetadataRepository(), getPaymentMethodRepository(),
                 getModalRepository(), getConfigurationModule().getPayerComplianceRepository(),
