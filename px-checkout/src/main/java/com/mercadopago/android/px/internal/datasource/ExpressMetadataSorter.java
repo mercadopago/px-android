@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
+import com.mercadopago.android.px.model.internal.ExpressMetadataInternal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 /* default */ public final class ExpressMetadataSorter {
-    @NonNull private final List<ExpressMetadata> expressMetadataList;
+    @NonNull private final List<ExpressMetadataInternal> expressMetadataList;
     @NonNull private final Map<String, DisabledPaymentMethod> disabledPaymentMethodMap;
     @Nullable private String prioritizedCardId;
 
-    /* default */ ExpressMetadataSorter(@NonNull final List<ExpressMetadata> expressMetadataList,
+    /* default */ ExpressMetadataSorter(@NonNull final List<ExpressMetadataInternal> expressMetadataList,
         @NonNull final Map<String, DisabledPaymentMethod> disabledPaymentMethodMap) {
         this.expressMetadataList = expressMetadataList;
         this.disabledPaymentMethodMap = disabledPaymentMethodMap;
@@ -27,11 +28,11 @@ import java.util.Map;
     }
 
     /* default */ void sort() {
-        final Iterator<ExpressMetadata> expressMetadataIterator = expressMetadataList.iterator();
-        final Collection<ExpressMetadata> disabledExpressMetadataList = new ArrayList<>();
-        ExpressMetadata prioritizedCard = null;
+        final Iterator<ExpressMetadataInternal> expressMetadataIterator = expressMetadataList.iterator();
+        final Collection<ExpressMetadataInternal> disabledExpressMetadataList = new ArrayList<>();
+        ExpressMetadataInternal prioritizedCard = null;
         while (expressMetadataIterator.hasNext()) {
-            final ExpressMetadata expressMetadata = expressMetadataIterator.next();
+            final ExpressMetadataInternal expressMetadata = expressMetadataIterator.next();
             if (expressMetadata.isNewCard()) {
                 break;
             } else if(disabledPaymentMethodMap.containsKey(expressMetadata.getCustomOptionId())) {

@@ -64,6 +64,7 @@ import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.ExpressMetadataInternal;
 import com.mercadopago.android.px.model.internal.FromExpressMetadataToPaymentConfiguration;
 import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.model.internal.Modal;
@@ -170,7 +171,7 @@ import java.util.List;
 
         final ElementDescriptorView.Model elementDescriptorModel = new ElementDescriptorMapper().map(summaryInfo);
 
-        final List<ExpressMetadata> expressMetadataList = expressMetadataRepository.getValue();
+        final List<ExpressMetadataInternal> expressMetadataList = expressMetadataRepository.getValue();
         final List<SummaryView.Model> summaryModels =
             new SummaryViewModelMapper(paymentSettingRepository.getCurrency(), discountRepository, amountRepository,
                 elementDescriptorModel, this, summaryInfo, chargeRepository, amountConfigurationRepository,

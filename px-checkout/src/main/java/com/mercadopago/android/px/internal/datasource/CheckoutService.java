@@ -26,6 +26,7 @@ import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.CheckoutFeatures;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
+import com.mercadopago.android.px.model.internal.ExpressMetadataInternal;
 import com.mercadopago.android.px.model.internal.InitRequest;
 import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -204,7 +205,7 @@ public class CheckoutService implements CheckoutRepository {
             @Override
             public void success(final CheckoutResponse checkoutResponse) {
                 refreshRetriesAvailable--;
-                final List<ExpressMetadata> oneTap = checkoutResponse.getOneTap();
+                final List<ExpressMetadataInternal> oneTap = checkoutResponse.getOneTap();
                 for (final ExpressMetadata node : oneTap) {
                     if (node.isCard() && node.getCard().getId().equals(cardId)) {
                         refreshRetriesAvailable = MAX_REFRESH_RETRIES;

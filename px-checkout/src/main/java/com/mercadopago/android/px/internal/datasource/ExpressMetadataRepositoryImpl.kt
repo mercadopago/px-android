@@ -5,17 +5,18 @@ import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepos
 import com.mercadopago.android.px.internal.repository.ExpressMetadataRepository
 import com.mercadopago.android.px.model.ExpressMetadata
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod
+import com.mercadopago.android.px.model.internal.ExpressMetadataInternal
 import java.io.File
 
 private const val EXPRESS_METADATA = "express_metadata_repository"
 
 internal class ExpressMetadataRepositoryImpl(private val fileManager: FileManager,
     private val disabledPaymentMethodRepository: DisabledPaymentMethodRepository) :
-    AbstractLocalRepository<List<ExpressMetadata>>(fileManager), ExpressMetadataRepository {
+    AbstractLocalRepository<List<ExpressMetadataInternal>>(fileManager), ExpressMetadataRepository {
 
     override val file: File = fileManager.create(EXPRESS_METADATA)
 
-    override fun readFromStorage() = fileManager.readAnyList(file, ExpressMetadata::class.java)
+    override fun readFromStorage() = fileManager.readAnyList(file, ExpressMetadataInternal::class.java)
 
     override fun sortByState() {
         val disabledPaymentMethodMap: Map<String, DisabledPaymentMethod> = disabledPaymentMethodRepository.disabledPaymentMethods

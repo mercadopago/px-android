@@ -14,7 +14,7 @@ data class CheckoutResponse(
     @SerializedName("configurations")
     val configuration: Configuration,
     val modals: Map<String, Modal>,
-    val oneTap: List<ExpressMetadata>? = null,
+    val oneTap: List<ExpressMetadataInternal>? = null,
     val availablePaymentMethods: List<PaymentMethod>,
     val payerPaymentMethods: List<CustomSearchItem>,
     @SerializedName("general_coupon")
