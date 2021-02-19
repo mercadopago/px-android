@@ -6,19 +6,19 @@ import com.mercadopago.android.px.model.*
 import com.mercadopago.android.px.preferences.CheckoutPreference
 
 data class CheckoutResponse(
-    val preference: CheckoutPreference? = null,
     val site: Site,
     val currency: Currency,
-    val experiments: List<Experiment>? = null,
-    val payerCompliance: PayerCompliance? = null,
     @SerializedName("configurations")
     val configuration: Configuration,
     val modals: Map<String, Modal>,
-    val oneTap: List<ExpressMetadataInternal>? = null,
     val availablePaymentMethods: List<PaymentMethod>,
     val payerPaymentMethods: List<CustomSearchItem>,
     @SerializedName("general_coupon")
     val defaultAmountConfiguration: String,
     @SerializedName("coupons")
-    val discountsConfigurations: Map<String, DiscountConfigurationModel>
+    val discountsConfigurations: Map<String, DiscountConfigurationModel>,
+    val preference: CheckoutPreference? = null,
+    val experiments: List<Experiment>? = null,
+    val payerCompliance: PayerCompliance? = null,
+    val oneTap: List<ExpressMetadataInternal>? = null
 )
