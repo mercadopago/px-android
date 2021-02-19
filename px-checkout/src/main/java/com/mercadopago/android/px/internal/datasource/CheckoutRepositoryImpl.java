@@ -20,6 +20,7 @@ import com.mercadopago.android.px.internal.repository.PayerComplianceRepository;
 import com.mercadopago.android.px.internal.repository.PayerPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.tracking.TrackingRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -42,7 +43,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
     private static final int RETRY_DELAY = 500;
 
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
-    @NonNull private final com.mercadopago.android.px.internal.services.CheckoutService checkoutService;
+    @NonNull private final CheckoutService checkoutService;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final ExperimentsRepository experimentsRepository;
     @NonNull /* default */ DisabledPaymentMethodRepository disabledPaymentMethodRepository;
@@ -61,7 +62,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
     public CheckoutRepositoryImpl(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final ExperimentsRepository experimentsRepository,
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
-        @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final com.mercadopago.android.px.internal.services.CheckoutService checkoutService,
+        @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
         @NonNull final TrackingRepository trackingRepository, @NonNull final MPTracker tracker,
         @NonNull final PayerPaymentMethodRepository payerPaymentMethodRepository,
         @NonNull final ExpressMetadataRepository expressMetadataRepository,
