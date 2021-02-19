@@ -6,7 +6,7 @@ import com.mercadolibre.android.cardform.internal.LifecycleListener;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.experiments.KnownVariant;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
-import com.mercadopago.android.px.internal.repository.InitRepository;
+import com.mercadopago.android.px.internal.repository.CheckoutRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -16,7 +16,7 @@ import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.events.SessionFrictionEventTracker;
@@ -26,14 +26,14 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements C
     @NonNull /* default */ final PaymentRepository paymentRepository;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull private final InitRepository initRepository;
+    @NonNull private final CheckoutRepository checkoutRepository;
     @NonNull private final PostPaymentUrlsMapper postPaymentUrlsMapper;
     @NonNull /* default */ ExperimentsRepository experimentsRepository;
     private final boolean withPrefetch;
 
     /* default */ CheckoutPresenter(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final UserSelectionRepository userSelectionRepository,
-        @NonNull final InitRepository initRepository,
+        @NonNull final CheckoutRepository checkoutRepository,
         @NonNull final PaymentRepository paymentRepository,
         @NonNull final ExperimentsRepository experimentsRepository,
         @NonNull final PostPaymentUrlsMapper postPaymentUrlsMapper,
@@ -42,7 +42,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements C
         super(tracker);
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
-        this.initRepository = initRepository;
+        this.checkoutRepository = checkoutRepository;
         this.paymentRepository = paymentRepository;
         this.experimentsRepository = experimentsRepository;
         this.postPaymentUrlsMapper = postPaymentUrlsMapper;
@@ -54,9 +54,9 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements C
         if (!withPrefetch) {
             getView().showProgress();
             if (isViewAttached()) {
-                initRepository.init().enqueue(new Callback<InitResponse>() {
+                checkoutRepository.init().enqueue(new Callback<CheckoutResponse>() {
                     @Override
-                    public void success(final InitResponse initResponse) {
+                    public void success(final CheckoutResponse checkoutResponse) {
                         showOneTap();
                     }
 
@@ -134,9 +134,9 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements C
 
     @Override
     public void onCardAdded(@NonNull final String cardId, @NonNull final LifecycleListener.Callback callback) {
-        initRepository.refreshWithNewCard(cardId).enqueue(new Callback<InitResponse>() {
+        checkoutRepository.refreshWithNewCard(cardId).enqueue(new Callback<CheckoutResponse>() {
             @Override
-            public void success(final InitResponse initResponse) {
+            public void success(final CheckoutResponse checkoutResponse) {
                 callback.onSuccess();
             }
 

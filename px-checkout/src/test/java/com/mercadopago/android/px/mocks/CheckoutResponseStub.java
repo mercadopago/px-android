@@ -2,11 +2,11 @@ package com.mercadopago.android.px.mocks;
 
 import androidx.annotation.NonNull;
 import com.mercadopago.android.px.internal.util.JsonUtil;
-import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.utils.ResourcesUtil;
 import java.util.Arrays;
 
-public enum InitResponseStub implements JsonStub<InitResponse> {
+public enum CheckoutResponseStub implements JsonStub<CheckoutResponse> {
     FULL(SiteStub.MLA,
         CurrencyStub.MLA,
         CheckoutPreferenceStub.DEFAULT,
@@ -82,7 +82,7 @@ public enum InitResponseStub implements JsonStub<InitResponse> {
     @NonNull private final String json;
 
     @SuppressWarnings("TypeMayBeWeakened")
-    InitResponseStub(@NonNull final SiteStub siteStub,
+    CheckoutResponseStub(@NonNull final SiteStub siteStub,
         @NonNull final CurrencyStub currencyStub,
         @NonNull final CheckoutPreferenceStub checkoutPreferenceStub,
         @NonNull final PaymentMethodStub[] paymentMethodStubs,
@@ -107,8 +107,8 @@ public enum InitResponseStub implements JsonStub<InitResponse> {
 
     @NonNull
     @Override
-    public InitResponse get() {
-        return JsonUtil.fromJson(json, InitResponse.class);
+    public CheckoutResponse get() {
+        return JsonUtil.fromJson(json, CheckoutResponse.class);
     }
 
     @NonNull

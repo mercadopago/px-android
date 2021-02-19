@@ -14,13 +14,12 @@ import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepos
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.repository.ExpressMetadataRepository;
-import com.mercadopago.android.px.internal.repository.InitRepository;
+import com.mercadopago.android.px.internal.repository.CheckoutRepository;
 import com.mercadopago.android.px.internal.repository.ModalRepository;
 import com.mercadopago.android.px.internal.repository.PayerComplianceRepository;
 import com.mercadopago.android.px.internal.repository.PayerPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.tracking.TrackingRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -28,20 +27,21 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.CheckoutFeatures;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import com.mercadopago.android.px.model.internal.InitRequest;
-import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public class InitService implements InitRepository {
+public class CheckoutService implements CheckoutRepository {
 
     private static final int MAX_REFRESH_RETRIES = 4;
     private static final int RETRY_DELAY = 500;
 
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
-    @NonNull private final CheckoutService checkoutService;
+    @NonNull private final com.mercadopago.android.px.internal.services.CheckoutService checkoutService;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final ExperimentsRepository experimentsRepository;
     @NonNull /* default */ DisabledPaymentMethodRepository disabledPaymentMethodRepository;
@@ -57,10 +57,10 @@ public class InitService implements InitRepository {
     /* default */ int refreshRetriesAvailable = MAX_REFRESH_RETRIES;
     /* default */ Handler retryHandler;
 
-    public InitService(@NonNull final PaymentSettingRepository paymentSettingRepository,
+    public CheckoutService(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final ExperimentsRepository experimentsRepository,
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
-        @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
+        @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final com.mercadopago.android.px.internal.services.CheckoutService checkoutService,
         @NonNull final TrackingRepository trackingRepository, @NonNull final MPTracker tracker,
         @NonNull final PayerPaymentMethodRepository payerPaymentMethodRepository,
         @NonNull final ExpressMetadataRepository expressMetadataRepository,
@@ -87,39 +87,39 @@ public class InitService implements InitRepository {
 
     @NonNull
     @Override
-    public MPCall<InitResponse> init() {
+    public MPCall<CheckoutResponse> init() {
         return newCall(getPostResponse());
     }
 
-    protected void configure(@NonNull final InitResponse initResponse) {
-        if (initResponse.getCheckoutPreference() != null) {
-            paymentSettingRepository.configure(initResponse.getCheckoutPreference());
+    protected void configure(@NonNull final CheckoutResponse checkoutResponse) {
+        if (checkoutResponse.getCheckoutPreference() != null) {
+            paymentSettingRepository.configure(checkoutResponse.getCheckoutPreference());
         }
-        paymentSettingRepository.configure(initResponse.getSite());
-        paymentSettingRepository.configure(initResponse.getCurrency());
-        paymentSettingRepository.configure(initResponse.getConfiguration());
-        experimentsRepository.configure(initResponse.getExperiments());
-        payerPaymentMethodRepository.configure(initResponse.getCustomSearchItems());
-        expressMetadataRepository.configure(initResponse.getExpress());
-        paymentMethodRepository.configure(initResponse.getPaymentMethods());
-        modalRepository.configure(initResponse.getModals());
-        payerComplianceRepository.configure(initResponse.getPayerCompliance());
-        amountConfigurationRepository.configure(initResponse.getDefaultAmountConfiguration());
-        discountRepository.configure(initResponse.getDiscountsConfigurations());
+        paymentSettingRepository.configure(checkoutResponse.getSite());
+        paymentSettingRepository.configure(checkoutResponse.getCurrency());
+        paymentSettingRepository.configure(checkoutResponse.getConfiguration());
+        experimentsRepository.configure(checkoutResponse.getExperiments());
+        payerPaymentMethodRepository.configure(checkoutResponse.getPayerPaymentMethods());
+        expressMetadataRepository.configure(checkoutResponse.getOneTap());
+        paymentMethodRepository.configure(checkoutResponse.getAvailablePaymentMethods());
+        modalRepository.configure(checkoutResponse.getModals());
+        payerComplianceRepository.configure(checkoutResponse.getPayerCompliance());
+        amountConfigurationRepository.configure(checkoutResponse.getDefaultAmountConfiguration());
+        discountRepository.configure(checkoutResponse.getDiscountsConfigurations());
 
         disabledPaymentMethodRepository.storeDisabledPaymentMethodsIds(
-            new ExpressMetadataToDisabledIdMapper().map(initResponse.getExpress()));
+            new ExpressMetadataToDisabledIdMapper().map(checkoutResponse.getOneTap()));
 
         tracker.setExperiments(experimentsRepository.getExperiments());
     }
 
     @Override
-    public void lazyConfigure(@NonNull final InitResponse initResponse) {
-        getPostResponse().call(initResponse);
+    public void lazyConfigure(@NonNull final CheckoutResponse checkoutResponse) {
+        getPostResponse().call(checkoutResponse);
     }
 
     interface PostResponse {
-        void call(InitResponse initResponse);
+        void call(CheckoutResponse checkoutResponse);
     }
 
     /* default */ PostResponse getPostResponse() {
@@ -132,21 +132,21 @@ public class InitService implements InitRepository {
     }
 
     @NonNull
-    private MPCall<InitResponse> newCall(@NonNull final PostResponse postResponse) {
-        return new MPCall<InitResponse>() {
+    private MPCall<CheckoutResponse> newCall(@NonNull final PostResponse postResponse) {
+        return new MPCall<CheckoutResponse>() {
 
             @Override
-            public void enqueue(final Callback<InitResponse> callback) {
+            public void enqueue(final Callback<CheckoutResponse> callback) {
                 newRequest().enqueue(getInternalCallback(callback));
             }
 
-            @NonNull /* default */ Callback<InitResponse> getInternalCallback(
-                final Callback<InitResponse> callback) {
-                return new Callback<InitResponse>() {
+            @NonNull /* default */ Callback<CheckoutResponse> getInternalCallback(
+                final Callback<CheckoutResponse> callback) {
+                return new Callback<CheckoutResponse>() {
                     @Override
-                    public void success(final InitResponse initResponse) {
-                        postResponse.call(initResponse);
-                        callback.success(initResponse);
+                    public void success(final CheckoutResponse checkoutResponse) {
+                        postResponse.call(checkoutResponse);
+                        callback.success(checkoutResponse);
                     }
 
                     @Override
@@ -158,7 +158,7 @@ public class InitService implements InitRepository {
         };
     }
 
-    @NonNull /* default */ MPCall<InitResponse> newRequest() {
+    @NonNull /* default */ MPCall<CheckoutResponse> newRequest() {
         final CheckoutPreference checkoutPreference = paymentSettingRepository.getCheckoutPreference();
         final PaymentConfiguration paymentConfiguration = paymentSettingRepository.getPaymentConfiguration();
 
@@ -192,25 +192,26 @@ public class InitService implements InitRepository {
 
     @NonNull
     @Override
-    public MPCall<InitResponse> refreshWithNewCard(@NonNull final String cardId) {
+    public MPCall<CheckoutResponse> refreshWithNewCard(@NonNull final String cardId) {
         return callback -> newCall(noPostResponse()).enqueue(getRefreshWithNewCardCallback(cardId, callback));
     }
 
-    /* default */ Callback<InitResponse> getRefreshWithNewCardCallback(@NonNull final String cardId,
-        @NonNull final Callback<InitResponse> callback) {
+    /* default */ Callback<CheckoutResponse> getRefreshWithNewCardCallback(@NonNull final String cardId,
+        @NonNull final Callback<CheckoutResponse> callback) {
         final Map<String, DisabledPaymentMethod> disabledPaymentMethodMap =
             disabledPaymentMethodRepository.getDisabledPaymentMethods();
-        return new Callback<InitResponse>() {
+        return new Callback<CheckoutResponse>() {
             @Override
-            public void success(final InitResponse initResponse) {
+            public void success(final CheckoutResponse checkoutResponse) {
                 refreshRetriesAvailable--;
-                for (final ExpressMetadata node : initResponse.getExpress()) {
+                final List<ExpressMetadata> oneTap = checkoutResponse.getOneTap();
+                for (final ExpressMetadata node : oneTap) {
                     if (node.isCard() && node.getCard().getId().equals(cardId)) {
                         refreshRetriesAvailable = MAX_REFRESH_RETRIES;
-                        new ExpressMetadataSorter(initResponse.getExpress(), disabledPaymentMethodMap)
+                        new ExpressMetadataSorter(oneTap, disabledPaymentMethodMap)
                             .setPrioritizedCardId(cardId).sort();
-                        getPostResponse().call(initResponse);
-                        callback.success(initResponse);
+                        getPostResponse().call(checkoutResponse);
+                        callback.success(checkoutResponse);
                         return;
                     }
                 }

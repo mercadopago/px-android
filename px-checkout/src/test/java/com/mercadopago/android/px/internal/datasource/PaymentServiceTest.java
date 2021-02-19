@@ -18,7 +18,6 @@ import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
-import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodRepository;
@@ -27,9 +26,10 @@ import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.mappers.PaymentMethodMapper;
-import com.mercadopago.android.px.mocks.InitResponseStub;
+import com.mercadopago.android.px.mocks.CheckoutResponseStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
@@ -41,11 +41,12 @@ import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.FromExpressMetadataToPaymentConfiguration;
-import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
 import com.mercadopago.android.px.utils.StubFailMpCall;
+import java.util.List;
 import kotlin.Pair;
 import kotlin.Unit;
 import org.junit.Before;
@@ -90,7 +91,6 @@ public class PaymentServiceTest {
     @Mock private ESCManagerBehaviour escManagerBehaviour;
     @Mock private TokenRepository tokenRepository;
     @Mock private InstructionsRepository instructionsRepository;
-    @Mock private InitRepository initRepository;
     @Mock private AmountConfigurationRepository amountConfigurationRepository;
     @Mock private CongratsRepository congratsRepository;
     @Mock private SplitSelectionState splitSelectionState;
@@ -337,9 +337,41 @@ public class PaymentServiceTest {
         return card;
     }
 
+    public Card getCardById(@NonNull final String cardId) {
+        final CheckoutResponse checkoutResponse = CheckoutResponseStub.FULL.get();
+        for (final CustomSearchItem customSearchItem : checkoutResponse.getPayerPaymentMethods()) {
+            if (customSearchItem.getId().equals(cardId)) {
+                final PaymentMethod paymentMethod = getPaymentMethodById(
+                    checkoutResponse.getAvailablePaymentMethods(),
+                    customSearchItem.getPaymentMethodId());
+                final Card card = new Card();
+                card.setId(cardId);
+                card.setSecurityCode(paymentMethod != null ? paymentMethod.getSecurityCode() : null);
+                card.setPaymentMethod(paymentMethod);
+                card.setFirstSixDigits(customSearchItem.getFirstSixDigits());
+                card.setLastFourDigits(customSearchItem.getLastFourDigits());
+                card.setIssuer(customSearchItem.getIssuer());
+                card.setEscStatus(customSearchItem.getEscStatus());
+                return card;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public PaymentMethod getPaymentMethodById(
+        @NonNull final List<PaymentMethod> paymentMethods,
+        @Nullable final String paymentMethodId) {
+        for (final PaymentMethod paymentMethod : paymentMethods) {
+            if (paymentMethod.getId().equals(paymentMethodId)) {
+                return paymentMethod;
+            }
+        }
+        return null;
+    }
+
     private Card creditCardPresetMock(final String cardId) {
-        final InitResponse initResponse = InitResponseStub.FULL.get();
-        final Card card = initResponse.getCardById(cardId);
+        final Card card = getCardById(cardId);
         when(node.getPaymentMethodId()).thenReturn(PaymentMethods.ARGENTINA.AMEX);
         when(node.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
         when(node.isCard()).thenReturn(true);

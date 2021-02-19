@@ -10,7 +10,7 @@ import com.mercadopago.android.px.internal.util.JsonUtil
 import com.mercadopago.android.px.model.exceptions.ApiException
 import com.mercadopago.android.px.model.internal.CheckoutFeatures
 import com.mercadopago.android.px.model.internal.InitRequest
-import com.mercadopago.android.px.model.internal.InitResponse
+import com.mercadopago.android.px.model.internal.CheckoutResponse
 import java.util.*
 
 internal class PrefetchInitService(private val checkout: MercadoPagoCheckout,
@@ -18,7 +18,7 @@ internal class PrefetchInitService(private val checkout: MercadoPagoCheckout,
     private val escManagerBehaviour: ESCManagerBehaviour,
     private val trackingRepository: TrackingRepository) {
 
-    suspend fun get(): Response<InitResponse, ApiException> {
+    suspend fun get(): Response<CheckoutResponse, ApiException> {
         val checkoutPreference = checkout.checkoutPreference
         val paymentConfiguration = checkout.paymentConfiguration
         val discountParamsConfiguration = checkout.advancedConfiguration.discountParamsConfiguration

@@ -20,7 +20,7 @@ import com.mercadopago.android.px.model.*
 import com.mercadopago.android.px.model.exceptions.ApiException
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod
-import com.mercadopago.android.px.model.internal.InitResponse
+import com.mercadopago.android.px.model.internal.CheckoutResponse
 import com.mercadopago.android.px.preferences.CheckoutPreference
 import com.mercadopago.android.px.tracking.internal.MPTracker
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent
@@ -55,7 +55,7 @@ class ExpressPaymentPresenterTest {
     private lateinit var payerCostSelectionRepository: PayerCostSelectionRepository
 
     @Mock
-    private lateinit var initRepository: InitRepository
+    private lateinit var checkoutRepository: CheckoutRepository
 
     @Mock
     private lateinit var discountRepository: DiscountRepository
@@ -138,7 +138,7 @@ class ExpressPaymentPresenterTest {
         `when`(amountConfigurationRepository.getConfigurationFor("123")).thenReturn(amountConfiguration)
         `when`(expressMetadataRepository.value).thenReturn(listOf(expressMetadata))
         expressPaymentPresenter = ExpressPaymentPresenter(paymentSettingRepository, disabledPaymentMethodRepository,
-            payerCostSelectionRepository, discountRepository, amountRepository, initRepository,
+            payerCostSelectionRepository, discountRepository, amountRepository, checkoutRepository,
             amountConfigurationRepository, chargeRepository, escManagerBehaviour, paymentMethodDrawableItemMapper,
             experimentsRepository, payerComplianceRepository, trackingRepository,
             mock(PaymentMethodDescriptorMapper::class.java), mock(CustomTextsRepository::class.java),
@@ -149,7 +149,7 @@ class ExpressPaymentPresenterTest {
 
     @Test
     fun whenFailToRetrieveCheckoutThenShowError() {
-        `when`<MPCall<InitResponse>>(initRepository.init()).thenReturn(StubFailMpCall(mock(ApiException::class.java)))
+        `when`<MPCall<CheckoutResponse>>(checkoutRepository.init()).thenReturn(StubFailMpCall(mock(ApiException::class.java)))
         expressPaymentPresenter.handleDeepLink()
         verify(view).showError(any(MercadoPagoError::class.java))
     }

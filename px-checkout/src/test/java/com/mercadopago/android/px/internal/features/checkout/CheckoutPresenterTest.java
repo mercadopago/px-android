@@ -3,11 +3,11 @@ package com.mercadopago.android.px.internal.features.checkout;
 import androidx.annotation.NonNull;
 import com.mercadopago.android.px.internal.experiments.Variant;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
-import com.mercadopago.android.px.internal.repository.InitRepository;
+import com.mercadopago.android.px.internal.repository.CheckoutRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.mocks.InitResponseStub;
+import com.mercadopago.android.px.mocks.CheckoutResponseStub;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.Site;
@@ -38,7 +38,7 @@ public class CheckoutPresenterTest {
     @Mock private Checkout.View checkoutView;
     @Mock private PaymentSettingRepository paymentSettingRepository;
     @Mock private UserSelectionRepository userSelectionRepository;
-    @Mock private InitRepository initRepository;
+    @Mock private CheckoutRepository checkoutRepository;
     @Mock private PaymentRepository paymentRepository;
     @Mock private ExperimentsRepository experimentsRepository;
     @Mock private PostPaymentUrlsMapper postPaymentUrlsMapper;
@@ -59,7 +59,7 @@ public class CheckoutPresenterTest {
     @Test
     public void whenCheckoutInitializedAndPaymentMethodSearchFailsThenShowError() {
         final ApiException apiException = mock(ApiException.class);
-        when(initRepository.init()).thenReturn(new StubFailMpCall<>(apiException));
+        when(checkoutRepository.init()).thenReturn(new StubFailMpCall<>(apiException));
 
         presenter.initialize();
 
@@ -70,16 +70,16 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenChoHasPreferenceAndPaymentMethodRetrievedShowOneTap() {
-        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.FULL.get()));
+        when(checkoutRepository.init()).thenReturn(new StubSuccessMpCall<>(CheckoutResponseStub.FULL.get()));
 
         presenter.initialize();
 
-        verify(initRepository).init();
+        verify(checkoutRepository).init();
         verify(checkoutView).showProgress();
         verify(checkoutView).hideProgress();
         verify(checkoutView).showOneTap(any(Variant.class));
         verifyNoMoreInteractions(checkoutView);
-        verifyNoMoreInteractions(initRepository);
+        verifyNoMoreInteractions(checkoutRepository);
     }
 
     @Test
@@ -145,7 +145,7 @@ public class CheckoutPresenterTest {
     private CheckoutPresenter getBasePresenter(final Checkout.View view) {
 
         presenter = new CheckoutPresenter(paymentSettingRepository, userSelectionRepository,
-            initRepository, paymentRepository, experimentsRepository, postPaymentUrlsMapper, mock(MPTracker.class),
+            checkoutRepository, paymentRepository, experimentsRepository, postPaymentUrlsMapper, mock(MPTracker.class),
             false);
 
         presenter.attachView(view);

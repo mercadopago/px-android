@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ExpressMetadata implements Parcelable, Serializable, ExpressPaymentMethod {
+public class ExpressMetadata implements Parcelable, Serializable, ExpressPaymentMethod {
 
     private final String paymentMethodId;
     private final String paymentTypeId;

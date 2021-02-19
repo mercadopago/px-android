@@ -13,7 +13,7 @@ import com.mercadopago.android.px.internal.util.JsonUtil
 import com.mercadopago.android.px.internal.viewmodel.LazyString
 import com.mercadopago.android.px.model.CvvInfo
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
-import com.mercadopago.android.px.model.internal.InitResponse
+import com.mercadopago.android.px.model.internal.CheckoutResponse
 import com.mercadopago.android.px.tracking.internal.MPTracker
 import com.mercadopago.android.px.utils.ResourcesUtil
 import kotlinx.coroutines.runBlocking
@@ -90,12 +90,12 @@ internal class DisplayDataUseCaseTest {
         val cardParams = mock(DisplayDataUseCase.CardParams::class.java)
         val resultBusinessCaptor = argumentCaptor<BusinessSecurityCodeDisplayData>()
         val cardId = "268434496"
-        val initResponse = loadInitResponseWithOneTap()
-        val displayInfo = initResponse.express.find { it.isCard && it.card.id == cardId }?.card?.displayInfo
+        val checkoutResponse = loadInitResponseWithOneTap()
+        val displayInfo = checkoutResponse.oneTap?.find { it.isCard && it.card.id == cardId }?.card?.displayInfo
         `when`(cardParams.id).thenReturn(cardId)
         `when`(cardParams.securityCodeLength).thenReturn(3)
         `when`(cardParams.securityCodeLocation).thenReturn("back")
-        `when`(expressMetadataRepository.value).thenReturn(initResponse.express)
+        `when`(expressMetadataRepository.value).thenReturn(checkoutResponse.oneTap)
         val expectedResult = SecurityCodeDisplayData(
             LazyString(0),
             LazyString(0, cardParams.securityCodeLength.toString()),
@@ -124,10 +124,10 @@ internal class DisplayDataUseCaseTest {
     fun whenIsCardWithGroups() = runBlocking {
         val cardParams = mock(DisplayDataUseCase.CardParams::class.java)
         val resultBusinessCaptor = argumentCaptor<BusinessSecurityCodeDisplayData>()
-        val initResponse = loadInitResponseWithGroup()
+        val checkoutResponse = loadInitResponseWithGroup()
         `when`(cardParams.securityCodeLength).thenReturn(3)
         `when`(cardParams.securityCodeLocation).thenReturn("back")
-        `when`(expressMetadataRepository.value).thenReturn(initResponse.express)
+        `when`(expressMetadataRepository.value).thenReturn(checkoutResponse.oneTap)
         val expectedResult = BusinessSecurityCodeDisplayData(
             LazyString(0),
             LazyString(0, cardParams.securityCodeLength.toString()),
@@ -169,12 +169,12 @@ internal class DisplayDataUseCaseTest {
     private fun loadInitResponseWithOneTap() = JsonUtil
         .fromJson(
             ResourcesUtil.getStringResource("init_response_one_tap.json"),
-            InitResponse::class.java
+            CheckoutResponse::class.java
         )
 
     private fun loadInitResponseWithGroup() = JsonUtil
         .fromJson(
             ResourcesUtil.getStringResource("init_response_group.json"),
-            InitResponse::class.java
+            CheckoutResponse::class.java
         )
 }

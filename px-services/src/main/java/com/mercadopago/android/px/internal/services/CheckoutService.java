@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
-import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.services.BuildConfig;
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +21,12 @@ public interface CheckoutService {
     String ENVIRONMENT = BuildConfig.API_ENVIRONMENT_NEW;
 
     @POST(ENVIRONMENT + "/px_mobile/" + CHECKOUT_VERSION + "/checkout")
-    MPCall<InitResponse> checkout(
+    MPCall<CheckoutResponse> checkout(
         @Query("access_token") String privateKey,
         @Body Map<String, Object> body);
 
     @POST(ENVIRONMENT + "/px_mobile/" + CHECKOUT_VERSION + "/checkout/{preference_id}")
-    MPCall<InitResponse> checkout(
+    MPCall<CheckoutResponse> checkout(
         @Path(value = "preference_id", encoded = true) String preferenceId,
         @Query("access_token") String privateKey,
         @Body Map<String, Object> body);

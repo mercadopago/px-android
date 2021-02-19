@@ -55,8 +55,8 @@ class MercadoPagoCheckout internal constructor(builder: Builder) {
     private fun startIntent(context: Context, checkoutIntent: Intent, requestCode: Int) {
         val session = Session.getInstance()
         session.init(this)
-        prefetch?.initResponse?.let {
-            session.initRepository.lazyConfigure(it)
+        prefetch?.checkoutResponse?.let {
+            session.checkoutRepository.lazyConfigure(it)
         }
         onCheckoutStarted()
         with(session.tracker) {

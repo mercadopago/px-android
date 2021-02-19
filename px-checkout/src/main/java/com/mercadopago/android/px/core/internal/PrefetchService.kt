@@ -6,7 +6,7 @@ import com.mercadopago.android.px.internal.di.Session
 import com.mercadopago.android.px.internal.util.ApiUtil
 import com.mercadopago.android.px.model.exceptions.ApiException
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
-import com.mercadopago.android.px.model.internal.InitResponse
+import com.mercadopago.android.px.model.internal.CheckoutResponse
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker.Id
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ import java.util.*
 internal class PrefetchService(private val checkout: MercadoPagoCheckout, private val session: Session,
     private var internalCallback: CheckoutLazyInit) {
 
-    var initResponse: InitResponse? = null
+    var checkoutResponse: CheckoutResponse? = null
         private set
 
     fun prefetch() {
@@ -50,7 +50,7 @@ internal class PrefetchService(private val checkout: MercadoPagoCheckout, privat
         CoroutineScope(Dispatchers.IO).launch {
             val response = session.getPrefetchInitService(checkout).get()
             withContext(Dispatchers.Main) { response.resolve(success = {
-                initResponse = it
+                checkoutResponse = it
                 success()
             }, error = { error(it) }) }
         }
