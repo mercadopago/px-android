@@ -337,7 +337,7 @@ public class PaymentServiceTest {
         return card;
     }
 
-    public Card getCardById(@NonNull final String cardId) {
+    private Card getCardById(@NonNull final String cardId) {
         final CheckoutResponse checkoutResponse = CheckoutResponseStub.FULL.get();
         for (final CustomSearchItem customSearchItem : checkoutResponse.getPayerPaymentMethods()) {
             if (customSearchItem.getId().equals(cardId)) {
@@ -359,7 +359,7 @@ public class PaymentServiceTest {
     }
 
     @Nullable
-    public PaymentMethod getPaymentMethodById(
+    private PaymentMethod getPaymentMethodById(
         @NonNull final List<PaymentMethod> paymentMethods,
         @Nullable final String paymentMethodId) {
         for (final PaymentMethod paymentMethod : paymentMethods) {
