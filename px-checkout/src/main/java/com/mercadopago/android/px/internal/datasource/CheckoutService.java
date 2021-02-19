@@ -93,8 +93,8 @@ public class CheckoutService implements CheckoutRepository {
     }
 
     protected void configure(@NonNull final CheckoutResponse checkoutResponse) {
-        if (checkoutResponse.getCheckoutPreference() != null) {
-            paymentSettingRepository.configure(checkoutResponse.getCheckoutPreference());
+        if (checkoutResponse.getPreference() != null) {
+            paymentSettingRepository.configure(checkoutResponse.getPreference());
         }
         paymentSettingRepository.configure(checkoutResponse.getSite());
         paymentSettingRepository.configure(checkoutResponse.getCurrency());

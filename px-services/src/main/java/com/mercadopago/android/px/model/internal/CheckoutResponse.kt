@@ -6,7 +6,7 @@ import com.mercadopago.android.px.model.*
 import com.mercadopago.android.px.preferences.CheckoutPreference
 
 data class CheckoutResponse(
-    val checkoutPreference: CheckoutPreference? = null,
+    val preference: CheckoutPreference? = null,
     val site: Site,
     val currency: Currency,
     val experiments: List<Experiment>? = null,
