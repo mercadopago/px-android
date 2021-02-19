@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CheckoutService implements CheckoutRepository {
+public class CheckoutRepositoryImpl implements CheckoutRepository {
 
     private static final int MAX_REFRESH_RETRIES = 4;
     private static final int RETRY_DELAY = 500;
@@ -58,7 +58,7 @@ public class CheckoutService implements CheckoutRepository {
     /* default */ int refreshRetriesAvailable = MAX_REFRESH_RETRIES;
     /* default */ Handler retryHandler;
 
-    public CheckoutService(@NonNull final PaymentSettingRepository paymentSettingRepository,
+    public CheckoutRepositoryImpl(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final ExperimentsRepository experimentsRepository,
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final com.mercadopago.android.px.internal.services.CheckoutService checkoutService,

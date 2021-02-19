@@ -5,6 +5,7 @@ import com.mercadopago.android.px.internal.features.checkout.PostPaymentUrlsMapp
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModelMapper
 import com.mercadopago.android.px.internal.features.payment_result.remedies.AlternativePayerPaymentMethodsMapper
 import com.mercadopago.android.px.internal.mappers.AmountDescriptorMapper
+import com.mercadopago.android.px.internal.viewmodel.mappers.CardDrawerCustomViewModelMapper
 import com.mercadopago.android.px.internal.mappers.CardUiMapper
 import com.mercadopago.android.px.internal.mappers.PaymentMethodDescriptorMapper
 import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper
@@ -17,6 +18,7 @@ internal object MapperProvider {
             session.configurationModule.chargeRepository,
             session.configurationModule.disabledPaymentMethodRepository,
             CardUiMapper,
+            CardDrawerCustomViewModelMapper,
             session.payerPaymentMethodRepository,
             session.modalRepository
         )

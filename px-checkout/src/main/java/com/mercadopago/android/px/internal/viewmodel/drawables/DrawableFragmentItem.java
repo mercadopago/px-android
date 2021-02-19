@@ -4,6 +4,7 @@ import android.os.Parcel;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.meli.android.carddrawer.model.SwitchModel;
 import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogItem;
 import com.mercadopago.android.px.internal.util.KParcelable;
 import com.mercadopago.android.px.model.Reimbursement;
@@ -23,6 +24,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
     private final String description;
     private final String issuerName;
     private final GenericDialogItem genericDialogItem;
+    private final SwitchModel switchModel;
 
     protected DrawableFragmentItem(@NonNull final Parameters parameters) {
         id = parameters.id;
@@ -34,6 +36,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
         description = parameters.description;
         issuerName = parameters.issuerName;
         genericDialogItem = parameters.genericDialogItem;
+        switchModel = parameters.switchModel;
     }
 
     protected DrawableFragmentItem(final Parcel in) {
@@ -46,6 +49,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
         description = in.readString();
         issuerName = in.readString();
         genericDialogItem = in.readParcelable(GenericDialogItem.class.getClassLoader());
+        switchModel = in.readParcelable(SwitchModel.class.getClassLoader());
     }
 
     @Override
@@ -59,6 +63,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
         dest.writeString(description);
         dest.writeString(issuerName);
         dest.writeParcelable(genericDialogItem, flags);
+        dest.writeParcelable(switchModel, flags);
     }
 
     public abstract Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer);
@@ -110,6 +115,11 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
         return genericDialogItem;
     }
 
+    @Nullable
+    public SwitchModel getSwitchModel() {
+        return switchModel;
+    }
+
     public static final class Parameters {
         /* default */ @NonNull final String id;
         /* default */ @NonNull final StatusMetadata status;
@@ -120,12 +130,13 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
         /* default */ @NonNull final String description;
         /* default */ @NonNull final String issuerName;
         /* default */ @NonNull final GenericDialogItem genericDialogItem;
+        /* default */ @Nullable final SwitchModel switchModel;
 
         /* default */ Parameters(@NonNull final String id, @NonNull final StatusMetadata status,
             @Nullable final Text bottomDescription, @Nullable final String chargeMessage,
             @Nullable final Reimbursement reimbursement, @Nullable final DisabledPaymentMethod disabledPaymentMethod,
             @NonNull final String description, @NonNull final String issuerName,
-            @Nullable final GenericDialogItem genericDialogItem) {
+            @Nullable final GenericDialogItem genericDialogItem, @Nullable final SwitchModel switchModel) {
             this.id = id;
             this.status = status;
             this.bottomDescription = bottomDescription;
@@ -135,6 +146,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
             this.description = description;
             this.issuerName = issuerName;
             this.genericDialogItem = genericDialogItem;
+            this.switchModel = switchModel;
         }
     }
 }

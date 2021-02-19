@@ -12,6 +12,9 @@ import androidx.cardview.widget.CardView;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+import com.meli.android.carddrawer.model.CardDrawerSwitchView;
+import com.meli.android.carddrawer.model.CardDrawerView;
+import com.meli.android.carddrawer.model.SwitchModel;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.BasePagerFragment;
 import com.mercadopago.android.px.internal.di.Session;
@@ -88,6 +91,24 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         }
         if (hasFocus()) {
             onFocusIn();
+        }
+        final CardDrawerView cardDrawerView = view.findViewById(R.id.card);
+        if(cardDrawerView != null) {
+            setUpCardDrawerView(cardDrawerView);
+        }
+    }
+
+    @CallSuper
+    protected void setUpCardDrawerView(@NonNull final CardDrawerView cardDrawerView) {
+        setUpCardDrawerCustomView(cardDrawerView);
+    }
+
+    private void setUpCardDrawerCustomView(@NonNull final CardDrawerView cardDrawerView) {
+        final SwitchModel switchModel = model.getSwitchModel();
+        if (switchModel != null) {
+            final CardDrawerSwitchView cardDrawerSwitch = new CardDrawerSwitchView(getContext());
+            cardDrawerSwitch.setSwitchModel(switchModel);
+            cardDrawerView.setCustomView(cardDrawerSwitch);
         }
     }
 

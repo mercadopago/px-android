@@ -33,11 +33,10 @@ public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFr
     }
 
     @Override
-    public void initializeViews(@NonNull final View view) {
-        super.initializeViews(view);
-        cardView = view.findViewById(R.id.card);
-
+    protected void setUpCardDrawerView(@NonNull final CardDrawerView cardDrawerView) {
+        super.setUpCardDrawerView(cardDrawerView);
         final CardUiConfiguration card = model.card;
+        cardView = cardDrawerView;
 
         cardView.getCard().setName(card.getName());
         cardView.getCard().setExpiration(card.getDate());
