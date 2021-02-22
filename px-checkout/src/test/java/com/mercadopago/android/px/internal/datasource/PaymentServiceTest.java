@@ -143,7 +143,7 @@ public class PaymentServiceTest {
     private PaymentConfiguration mockPaymentConfiguration(@NonNull final ExpressMetadata expressMetadata,
         @Nullable final PayerCost payerCost) {
         final AmountConfiguration amountConfiguration = mock(AmountConfiguration.class);
-        when(amountConfigurationRepository.getConfigurationFor(anyString())).thenReturn(amountConfiguration);
+        when(amountConfigurationRepository.getConfigurationFor(anyString(), )).thenReturn(amountConfiguration);
         when(amountConfiguration.getCurrentPayerCost(anyBoolean(), anyInt())).thenReturn(payerCost);
         return new FromExpressMetadataToPaymentConfiguration(amountConfigurationRepository, splitSelectionState,
             payerCostSelectionRepository).map(expressMetadata);

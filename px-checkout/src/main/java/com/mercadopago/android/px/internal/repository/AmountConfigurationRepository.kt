@@ -19,6 +19,6 @@ internal interface AmountConfigurationRepository : LocalRepository<String> {
      * @param customOptionId The [com.mercadopago.android.px.model.CustomSearchItem] ID.
      * @return The payer cost configuration, returns null if don't have a configuration or ID is invalid.
      */
-    fun getConfigurationFor(customOptionId: String): AmountConfiguration?
+    fun getConfigurationFor(customOptionId: String, paymentMethodType: String): AmountConfiguration?
 
 }

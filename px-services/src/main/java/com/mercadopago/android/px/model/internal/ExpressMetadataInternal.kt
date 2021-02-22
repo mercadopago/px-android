@@ -5,10 +5,10 @@ import com.mercadopago.android.px.model.ExpressMetadata
 
 class ExpressMetadataInternal(parcel: Parcel?) : ExpressMetadata(parcel) {
 
-    private lateinit var applications: List<Application>
+    private var applications: List<Application>? = null
 
     init {
-        parcel?.readList(applications, Application::class.java.classLoader)
+        applications?.let { parcel?.readList(it, Application::class.java.classLoader) }
     }
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
@@ -17,4 +17,6 @@ class ExpressMetadataInternal(parcel: Parcel?) : ExpressMetadata(parcel) {
     }
 
     fun getApplications() = applications
+
+    fun getDefaultPaymentMethodType() = displayInfo?.cardDrawerSwitch?.default ?: paymentTypeId
 }

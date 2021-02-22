@@ -7,6 +7,7 @@ import com.mercadopago.android.px.internal.repository.*
 internal class CheckoutConfigurationModule(context: Context) : ConfigurationModule(context) {
 
     val userSelectionRepository: UserSelectionRepository by lazy { UserSelectionService(sharedPreferences, fileManager) }
+    val paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository by lazy { PaymentMethodTypeSelectionRepositoryImpl(sharedPreferences) }
     val paymentSettings: PaymentSettingRepository by lazy { PaymentSettingService(sharedPreferences, fileManager) }
     val disabledPaymentMethodRepository: DisabledPaymentMethodRepository by lazy {
         DisabledPaymentMethodService(sharedPreferences)

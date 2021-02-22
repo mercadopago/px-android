@@ -9,11 +9,12 @@ public interface ConfigurationSolver {
     /**
      * Retrieves the dominant discount hash for a custom option.
      *
-     * @param customOptionId The custom option ID.
+     * @param customOptionId    The custom option ID.
+     * @param paymentMethodType
      * @return The hash associated to the discount configuration.
      */
     @NonNull
-    String getConfigurationHashFor(@NonNull final String customOptionId);
+    String getConfigurationHashFor(@NonNull final String customOptionId, @NonNull final String paymentMethodType);
 
     /**
      * Retrieves the dominant payer cost model for a custom option.
@@ -22,5 +23,6 @@ public interface ConfigurationSolver {
      * @return The payer cost model associated to the custom option ID.
      */
     @Nullable
-    AmountConfiguration getAmountConfigurationFor(@NonNull final String customOptionId);
+    AmountConfiguration getAmountConfigurationFor(@NonNull final String customOptionId,
+        @NonNull final String paymentMethodType);
 }

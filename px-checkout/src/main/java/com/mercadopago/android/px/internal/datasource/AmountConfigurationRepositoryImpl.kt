@@ -22,17 +22,17 @@ internal class AmountConfigurationRepositoryImpl(private val fileManager: FileMa
             ?: throw IllegalStateException("Payer costs shouldn't be requested without a selected payment method")
         return when {
             isCardPaymentType(paymentMethod.paymentTypeId) -> {
-                userSelectionRepository.card?.id?.let { configurationSolver.getAmountConfigurationFor(it) }
+                userSelectionRepository.card?.id?.let { configurationSolver.getAmountConfigurationFor(it, paymentMethod.paymentTypeId) }
             }
             isAccountMoney(paymentMethod.paymentTypeId) || isDigitalCurrency(paymentMethod.paymentTypeId) -> {
-                configurationSolver.getAmountConfigurationFor(paymentMethod.id)
+                configurationSolver.getAmountConfigurationFor(paymentMethod.id, paymentMethod.paymentTypeId)
             }
             else -> null
         } ?: throw IllegalStateException("Couldn't find valid current configuration")
     }
 
-    override fun getConfigurationFor(customOptionId: String): AmountConfiguration? {
-        return configurationSolver.getAmountConfigurationFor(customOptionId)
+    override fun getConfigurationFor(customOptionId: String, paymentMethodType: String): AmountConfiguration? {
+        return configurationSolver.getAmountConfigurationFor(customOptionId, paymentMethodType)
     }
 
     override fun readFromStorage() = fileManager.readText(file)

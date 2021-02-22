@@ -19,15 +19,17 @@ internal class DiscountServiceImpl(private val fileManager: FileManager,
 
     override fun getCurrentConfiguration(): DiscountConfigurationModel {
         // Remember to prioritize the selected discount over the rest when the selector feature is added.
-        return userSelectionRepository.card?.id?.let {
-            getConfiguration(configurationSolver.getConfigurationHashFor(it))
-        } ?: userSelectionRepository.paymentMethod?.let { paymentMethod ->
-            getConfiguration(configurationSolver.getConfigurationHashFor(paymentMethod.id))
+       val paymentMethod = userSelectionRepository.paymentMethod
+
+        return paymentMethod?.let { pm ->
+            userSelectionRepository.card?.id?.let {
+                getConfiguration(configurationSolver.getConfigurationHashFor(it, pm.paymentTypeId))
+            } ?: getConfiguration(configurationSolver.getConfigurationHashFor(pm.id, pm.paymentTypeId))
         } ?: getConfiguration(amountConfigurationRepository.value)
     }
 
-    override fun getConfigurationFor(customOptionId: String): DiscountConfigurationModel {
-        return getConfiguration(configurationSolver.getConfigurationHashFor(customOptionId))
+    override fun getConfigurationFor(customOptionId: String, paymentMethodType: String): DiscountConfigurationModel {
+        return getConfiguration(configurationSolver.getConfigurationHashFor(customOptionId, paymentMethodType))
     }
 
     private fun getConfiguration(hash: String?): DiscountConfigurationModel {

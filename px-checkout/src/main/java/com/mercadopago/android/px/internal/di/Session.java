@@ -290,7 +290,8 @@ public final class Session extends ApplicationModule {
                 getFileManager(),
                 MapperProvider.INSTANCE.getFromPayerPaymentMethodIdToCardMapper(),
                 MapperProvider.INSTANCE.getPaymentMethodMapper(),
-                getPaymentMethodRepository());
+                getPaymentMethodRepository(),
+                configurationModule.getPaymentMethodTypeSelectionRepository());
         }
 
         return paymentRepository;

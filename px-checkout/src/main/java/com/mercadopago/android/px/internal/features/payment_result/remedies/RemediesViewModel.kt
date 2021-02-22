@@ -51,7 +51,7 @@ internal class RemediesViewModel(
             val methodData = expressMetadataRepository.value.find { it.customOptionId == customOptionId }
             card = fromPayerPaymentMethodIdToCardMapper.map(methodData?.customOptionId)
             paymentConfiguration = PaymentConfiguration(methodIds.methodId, methodIds.typeId, customOptionId,
-                card != null, false, getPayerCost(customOptionId))
+                card != null, false, getPayerCost(customOptionId, methodIds.typeId))
             withContext(Dispatchers.Main) {
                 remediesModel.retryPayment?.let {
                     remedyState.value = RemedyState.ShowRetryPaymentRemedy(Pair(it, methodData))
@@ -87,13 +87,15 @@ internal class RemediesViewModel(
         }
     }
 
-    private fun getPayerCost(customOptionId: String): PayerCost? {
+    private fun getPayerCost(customOptionId: String, paymentMethodType: String): PayerCost? {
         return previousPaymentModel.run {
             if (isSilverBullet) {
                 remedies.suggestedPaymentMethod?.alternativePaymentMethod?.installmentsList?.run {
                     if (isNotEmpty()) {
                         get(0).let {
-                            amountConfigurationRepository.getConfigurationFor(customOptionId)?.run {
+                            amountConfigurationRepository.getConfigurationFor(
+                                customOptionId,
+                                paymentMethodType)?.run {
                                 for (i in 0 until payerCosts.size) {
                                     val payerCost = payerCosts[i]
                                     if (payerCost.installments == it.installments) {

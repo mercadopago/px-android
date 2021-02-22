@@ -16,6 +16,7 @@ import java.io.Serializable;
 public abstract class DrawableFragmentItem implements KParcelable, Serializable {
 
     private final String id;
+    private final String type;
     private final StatusMetadata status;
     private final Text bottomDescription;
     private final String chargeMessage;
@@ -28,6 +29,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
 
     protected DrawableFragmentItem(@NonNull final Parameters parameters) {
         id = parameters.id;
+        type = parameters.type;
         status = parameters.status;
         bottomDescription = parameters.bottomDescription;
         chargeMessage = parameters.chargeMessage;
@@ -41,6 +43,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
 
     protected DrawableFragmentItem(final Parcel in) {
         id = in.readString();
+        type = in.readString();
         status = in.readParcelable(StatusMetadata.class.getClassLoader());
         bottomDescription = in.readParcelable(Text.class.getClassLoader());
         chargeMessage = in.readString();
@@ -55,6 +58,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(id);
+        dest.writeString(type);
         dest.writeParcelable(status, flags);
         dest.writeParcelable(bottomDescription, flags);
         dest.writeString(chargeMessage);
@@ -70,6 +74,10 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
 
     public String getId() {
         return id;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public StatusMetadata getStatus() {
@@ -122,6 +130,7 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
 
     public static final class Parameters {
         /* default */ @NonNull final String id;
+        /* default */ @NonNull final String type;
         /* default */ @NonNull final StatusMetadata status;
         /* default */ @Nullable private Text bottomDescription;
         /* default */ @Nullable final String chargeMessage;
@@ -132,12 +141,13 @@ public abstract class DrawableFragmentItem implements KParcelable, Serializable 
         /* default */ @NonNull final GenericDialogItem genericDialogItem;
         /* default */ @Nullable final SwitchModel switchModel;
 
-        /* default */ Parameters(@NonNull final String id, @NonNull final StatusMetadata status,
+        /* default */ Parameters(@NonNull final String id, @NonNull final String type, @NonNull final StatusMetadata status,
             @Nullable final Text bottomDescription, @Nullable final String chargeMessage,
             @Nullable final Reimbursement reimbursement, @Nullable final DisabledPaymentMethod disabledPaymentMethod,
             @NonNull final String description, @NonNull final String issuerName,
             @Nullable final GenericDialogItem genericDialogItem, @Nullable final SwitchModel switchModel) {
             this.id = id;
+            this.type = type;
             this.status = status;
             this.bottomDescription = bottomDescription;
             this.chargeMessage = chargeMessage;

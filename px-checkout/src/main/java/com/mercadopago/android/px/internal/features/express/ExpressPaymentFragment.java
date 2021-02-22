@@ -381,6 +381,7 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
             session.getTracker(),
             session.getExpressMetadataRepository(),
             session.getPayerPaymentMethodRepository(),
+            configurationModule.getPaymentMethodTypeSelectionRepository(),
             session.getModalRepository());
     }
 
@@ -570,6 +571,12 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
         final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         hubAdapter.updateData(paymentMethodIndex, payerCostSelected, splitSelectionState);
+    }
+
+    @Override
+    public void updateViewForPaymentMethodType(@NonNull final String paymentMethodType, final int payerCostSelected,
+        @NonNull final SplitSelectionState splitSelectionState) {
+        hubAdapter.updateDataBySelection(paymentMethodType, payerCostSelected, splitSelectionState);
     }
 
     /* default */ void onInstallmentSelected(final PayerCost payerCostSelected) {

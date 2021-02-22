@@ -44,6 +44,7 @@ import com.mercadopago.android.px.internal.repository.ModalRepository;
 import com.mercadopago.android.px.internal.repository.PayerComplianceRepository;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PayerPaymentMethodRepository;
+import com.mercadopago.android.px.internal.repository.PaymentMethodTypeSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.tracking.TrackingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
@@ -52,10 +53,10 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
-import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.view.experiments.ExperimentHelper;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.SummaryModel;
 import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -105,6 +106,7 @@ import java.util.List;
     @NonNull private final AmountDescriptorMapper amountDescriptorMapper;
     @NonNull private final ExpressMetadataRepository expressMetadataRepository;
     @NonNull private final PayerPaymentMethodRepository payerPaymentMethodRepository;
+    @NonNull private final PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository;
     @NonNull private final ModalRepository modalRepository;
     @NonNull /* default */ final CheckoutRepository checkoutRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
@@ -130,6 +132,7 @@ import java.util.List;
         @NonNull final MPTracker tracker,
         @NonNull final ExpressMetadataRepository expressMetadataRepository,
         @NonNull final PayerPaymentMethodRepository payerPaymentMethodRepository,
+        @NonNull final PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository,
         @NonNull final ModalRepository modalRepository) {
         super(tracker);
         this.paymentSettingRepository = paymentSettingRepository;
@@ -150,6 +153,7 @@ import java.util.List;
         this.amountDescriptorMapper = amountDescriptorMapper;
         this.expressMetadataRepository = expressMetadataRepository;
         this.payerPaymentMethodRepository = payerPaymentMethodRepository;
+        this.paymentMethodTypeSelectionRepository = paymentMethodTypeSelectionRepository;
         this.modalRepository = modalRepository;
 
         triggerableQueue = new TriggerableQueue();
@@ -172,16 +176,21 @@ import java.util.List;
         final ElementDescriptorView.Model elementDescriptorModel = new ElementDescriptorMapper().map(summaryInfo);
 
         final List<ExpressMetadataInternal> expressMetadataList = expressMetadataRepository.getValue();
-        final List<SummaryView.Model> summaryModels =
+        final List<SummaryModel> summaryModels =
             new SummaryViewModelMapper(paymentSettingRepository.getCurrency(), discountRepository, amountRepository,
                 elementDescriptorModel, this, summaryInfo, chargeRepository, amountConfigurationRepository,
-                customTextsRepository, amountDescriptorMapper).map(expressMetadataList);
+                customTextsRepository, amountDescriptorMapper, paymentMethodTypeSelectionRepository)
+                .map(expressMetadataList);
+
 
         final List<PaymentMethodDescriptorView.Model> paymentModels =
             paymentMethodDescriptorMapper.map(expressMetadataList);
 
         final List<SplitPaymentHeaderAdapter.Model> splitHeaderModels =
-            new SplitHeaderMapper(paymentSettingRepository.getCurrency(), amountConfigurationRepository)
+            new SplitHeaderMapper(
+                paymentSettingRepository.getCurrency(),
+                amountConfigurationRepository,
+                paymentMethodTypeSelectionRepository)
                 .map(expressMetadataList);
 
         final List<ConfirmButtonViewModel> confirmButtonViewModels =
@@ -259,20 +268,26 @@ import java.util.List;
         updateInstallments();
         getView().animateInstallmentsList();
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+        final String customOptionId = expressMetadata.getCustomOptionId();
         final AmountConfiguration amountConfiguration =
-            amountConfigurationRepository.getConfigurationFor(expressMetadata.getCustomOptionId());
+            amountConfigurationRepository.getConfigurationFor(
+                customOptionId,
+                paymentMethodTypeSelectionRepository.get(customOptionId));
         track(new InstallmentsEventTrack(expressMetadata, amountConfiguration));
     }
 
     @Override
     public void updateInstallments() {
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+        final String customOptionId = expressMetadata.getCustomOptionId();
         final AmountConfiguration amountConfiguration =
-            amountConfigurationRepository.getConfigurationFor(expressMetadata.getCustomOptionId());
+            amountConfigurationRepository.getConfigurationFor(
+                customOptionId,
+                paymentMethodTypeSelectionRepository.get(customOptionId));
         final List<PayerCost> payerCostList = getCurrentPayerCosts();
         final int selectedIndex = amountConfiguration.getCurrentPayerCostIndex(
             getState().getSplitSelectionState().userWantsToSplit(),
-            payerCostSelectionRepository.get(expressMetadata.getCustomOptionId()));
+            payerCostSelectionRepository.get(customOptionId));
         final List<InstallmentRowHolder.Model> models =
             new InstallmentViewModelMapper(paymentSettingRepository.getCurrency(), expressMetadata.getBenefits(),
                 getVariants()).map(payerCostList);
@@ -281,8 +296,11 @@ import java.util.List;
 
     private List<PayerCost> getCurrentPayerCosts() {
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+        final String customOptionId = expressMetadata.getCustomOptionId();
+
         final AmountConfiguration amountConfiguration =
-            amountConfigurationRepository.getConfigurationFor(expressMetadata.getCustomOptionId());
+            amountConfigurationRepository.getConfigurationFor(customOptionId,
+                paymentMethodTypeSelectionRepository.get(customOptionId));
         return amountConfiguration.getAppliedPayerCost(getState().getSplitSelectionState().userWantsToSplit());
     }
 
@@ -321,7 +339,9 @@ import java.util.List;
     @Override
     public void onPayerCostSelected(final PayerCost payerCostSelected) {
         final String customOptionId = getCurrentExpressMetadata().getCustomOptionId();
-        final int selected = amountConfigurationRepository.getConfigurationFor(customOptionId)
+        final int selected = amountConfigurationRepository.getConfigurationFor(
+            customOptionId,
+            paymentMethodTypeSelectionRepository.get(customOptionId))
             .getAppliedPayerCost(getState().getSplitSelectionState().userWantsToSplit())
             .indexOf(payerCostSelected);
         updateElementPosition(selected);
@@ -333,6 +353,18 @@ import java.util.List;
                 }
             }
         });
+    }
+
+    @Override
+    public void onPaymentMethodTypeChanged(@NonNull final String paymentMethodType) {
+        final String customOptionId = getCurrentExpressMetadata().getCustomOptionId();
+
+        paymentMethodTypeSelectionRepository.save(customOptionId, paymentMethodType);
+        getView().updateViewForPaymentMethodType(
+            paymentMethodType,
+            payerCostSelectionRepository.get(customOptionId),
+            getState().getSplitSelectionState()
+        );
     }
 
     public void onDisabledDescriptorViewClick() {
@@ -453,7 +485,8 @@ import java.util.List;
         final PaymentConfiguration configuration = new FromExpressMetadataToPaymentConfiguration(
             amountConfigurationRepository,
             getState().getSplitSelectionState(),
-            payerCostSelectionRepository).map(expressMetadata);
+            payerCostSelectionRepository,
+            paymentMethodTypeSelectionRepository).map(expressMetadata);
 
         callback.call(configuration);
     }

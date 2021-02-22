@@ -22,5 +22,5 @@ internal interface DiscountRepository : LocalRepository<Map<String, DiscountConf
      * @param customOptionId The [com.mercadopago.android.px.model.CustomSearchItem] ID.
      * @return The discount configuration, returns null if the ID is invalid.
      */
-    fun getConfigurationFor(customOptionId: String): DiscountConfigurationModel
+    fun getConfigurationFor(customOptionId: String, paymentMethodType: String): DiscountConfigurationModel
 }

@@ -135,8 +135,8 @@ class ExpressPaymentPresenterTest {
         `when`(expressMetadataInternal.customOptionId).thenReturn("123")
         `when`(expressMetadataInternal.status).thenReturn(mock(StatusMetadata::class.java))
         `when`(discountRepository.getCurrentConfiguration()).thenReturn(discountConfigurationModel)
-        `when`(discountRepository.getConfigurationFor("123")).thenReturn(discountConfigurationModel)
-        `when`(amountConfigurationRepository.getConfigurationFor("123")).thenReturn(amountConfiguration)
+        `when`(discountRepository.getConfigurationFor("123", )).thenReturn(discountConfigurationModel)
+        `when`(amountConfigurationRepository.getConfigurationFor("123", )).thenReturn(amountConfiguration)
         `when`(expressMetadataRepository.value).thenReturn(listOf(expressMetadataInternal))
         expressPaymentPresenter = ExpressPaymentPresenter(paymentSettingRepository, disabledPaymentMethodRepository,
             payerCostSelectionRepository, discountRepository, amountRepository, checkoutRepository,

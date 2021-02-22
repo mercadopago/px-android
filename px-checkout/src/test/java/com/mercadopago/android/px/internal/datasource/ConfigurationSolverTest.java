@@ -50,17 +50,17 @@ public class ConfigurationSolverTest {
     @Test
     public void whenHasConfigurationByAccountMoneyIdThenReturnAccountMoneyConfigurationHash() {
         assertEquals(HASH_SAMPLE_ACCOUNT_MONEY_CONFIGURATION,
-            discountConfigurationSolver.getConfigurationHashFor(ACCOUNT_MONEY_SAMPLE_ID));
+            discountConfigurationSolver.getConfigurationHashFor(ACCOUNT_MONEY_SAMPLE_ID, ));
     }
 
     @Test
     public void whenHasConfigurationByCardIdIdThenReturnCardConfigurationHash() {
         assertEquals(HASH_SAMPLE_SAVED_CARD_CONFIGURATION,
-            discountConfigurationSolver.getConfigurationHashFor(CARD_SAMPLE_ID));
+            discountConfigurationSolver.getConfigurationHashFor(CARD_SAMPLE_ID, ));
     }
 
     @Test
     public void whenHasNotConfigurationByIdThenReturnEmptyConfiguration() {
-        assertEquals("", discountConfigurationSolver.getConfigurationHashFor("5678"));
+        assertEquals("", discountConfigurationSolver.getConfigurationHashFor("5678", ));
     }
 }

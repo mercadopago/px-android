@@ -47,6 +47,10 @@ public interface ExpressPayment {
             final int payerCostSelected,
             @NonNull final SplitSelectionState splitSelectionState);
 
+        void updateViewForPaymentMethodType(@NonNull final String paymentMethodType,
+            final int payerCostSelected,
+            @NonNull final SplitSelectionState splitSelectionState);
+
         void updateInstallmentsList(final int selectedIndex, @NonNull List<InstallmentRowHolder.Model> models);
 
         void animateInstallmentsList();
@@ -107,6 +111,8 @@ public interface ExpressPayment {
         void onSliderOptionSelected(final int paymentMethodIndex);
 
         void onPayerCostSelected(final PayerCost payerCostSelected);
+
+        void onPaymentMethodTypeChanged(@NonNull final String paymentMethodType);
 
         void onSplitChanged(boolean isChecked);
 
