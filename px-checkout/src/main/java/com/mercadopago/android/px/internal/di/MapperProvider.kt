@@ -20,16 +20,20 @@ internal object MapperProvider {
             CardUiMapper,
             CardDrawerCustomViewModelMapper,
             session.payerPaymentMethodRepository,
-            session.modalRepository
+            session.modalRepository,
+            session.paymentMethodTypeSelectionRepository
         )
     }
 
     fun getPaymentMethodDescriptorMapper(): PaymentMethodDescriptorMapper {
+        val session = Session.getInstance()
+
         return PaymentMethodDescriptorMapper(
-            Session.getInstance().configurationModule.paymentSettings,
-            Session.getInstance().amountConfigurationRepository,
-            Session.getInstance().configurationModule.disabledPaymentMethodRepository,
-            Session.getInstance().amountRepository
+            session.configurationModule.paymentSettings,
+            session.amountConfigurationRepository,
+            session.configurationModule.disabledPaymentMethodRepository,
+            session.paymentMethodTypeSelectionRepository,
+            session.amountRepository
         )
     }
 

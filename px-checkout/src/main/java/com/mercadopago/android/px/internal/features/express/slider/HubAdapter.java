@@ -74,4 +74,12 @@ public class HubAdapter extends ViewAdapter<HubAdapter.Model, View> {
             adapter.update(adapter.getNewModels(data));
         }
     }
+
+    @Override
+    public void updateDataBySelection(@NonNull final String key, final int payerCostSelected,
+        @NonNull final SplitSelectionState splitSelectionState) {
+        for (final HubableAdapter adapter : adapters) {
+            adapter.updateDataBySelection(key, payerCostSelected, splitSelectionState);
+        }
+    }
 }

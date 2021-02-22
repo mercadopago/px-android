@@ -23,7 +23,8 @@ internal class PaymentMethodDrawableItemMapper(
     private val cardUiMapper: CardUiMapper,
     private val cardDrawerCustomViewModelMapper: CardDrawerCustomViewModelMapper,
     private val payerPaymentMethodRepository: PayerPaymentMethodRepository,
-    private val modalRepository: ModalRepository
+    private val modalRepository: ModalRepository,
+    private val paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository
 ) : NonNullMapper<ExpressMetadataInternal, DrawableFragmentItem?>() {
 
     override fun map(value: ExpressMetadataInternal): DrawableFragmentItem? {
@@ -56,7 +57,7 @@ internal class PaymentMethodDrawableItemMapper(
         genericDialogItem: GenericDialogItem?
     ): Parameters {
         val customOptionId = expressMetadata.customOptionId
-        val paymentTypeId = expressMetadata.getDefaultPaymentMethodType()
+        val paymentTypeId = paymentMethodTypeSelectionRepository.get(customOptionId)
         val displayInfo = expressMetadata.displayInfo
         val charge = chargeRepository.getChargeRule(paymentTypeId)
         val (description, issuerName) = customSearchItems.firstOrNull { c -> c.id == customOptionId }?.let {

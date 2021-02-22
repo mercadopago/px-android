@@ -18,5 +18,8 @@ class ExpressMetadataInternal(parcel: Parcel?) : ExpressMetadata(parcel) {
 
     fun getApplications() = applications
 
-    fun getDefaultPaymentMethodType() = displayInfo?.cardDrawerSwitch?.default ?: paymentTypeId
+    fun getDefaultPaymentMethodType(): String = displayInfo
+        ?.cardDrawerSwitch
+        ?.default
+        ?: paymentTypeId ?: paymentMethodId
 }

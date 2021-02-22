@@ -96,7 +96,7 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInter
         } else {
             summaryViewModelToMap(
                 customOptionId,
-                expressMetadata.getPaymentTypeId(),
+                expressMetadata.getDefaultPaymentMethodType(),
                 map);
         }
 
@@ -164,7 +164,7 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInter
         final List<PaymentTypeChargeRule> chargeRules = new ArrayList<>();
         final List<DiscountConfigurationModel> discountConfigurationModels = new ArrayList<>();
         final List<Boolean> hasSplits = new ArrayList<>();
-        String paymentMethodType;
+        String paymentMethodType = expressPaymentMethod.getDefaultPaymentMethodType();
         AmountConfiguration amountConfiguration;
 
         if (expressPaymentMethod.getApplications() != null && !expressPaymentMethod.getApplications().isEmpty()) {
@@ -180,7 +180,6 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInter
                     amountConfiguration);
             }
         } else {
-            paymentMethodType = expressPaymentMethod.getPaymentTypeId();
             amountConfiguration = getAmountConfiguration(customOptionId, paymentMethodType);
             addKeyDataList(
                 chargeRules,
