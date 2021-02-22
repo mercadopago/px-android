@@ -108,6 +108,8 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         if (switchModel != null) {
             final CardDrawerSwitchView cardDrawerSwitch = new CardDrawerSwitchView(getContext());
             cardDrawerSwitch.setSwitchModel(switchModel);
+            cardDrawerSwitch.setSwitchListener(paymentMethodId ->
+                ((CardActionListener) getParentFragment()).onCardPaymentMethodChange(paymentMethodId));
             cardDrawerView.setCustomView(cardDrawerSwitch);
         }
     }
@@ -266,5 +268,9 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         default int getRequestCode() {
             return 0;
         }
+    }
+
+    public interface CardActionListener {
+        void onCardPaymentMethodChange(@NonNull final String paymentMethodType);
     }
 }

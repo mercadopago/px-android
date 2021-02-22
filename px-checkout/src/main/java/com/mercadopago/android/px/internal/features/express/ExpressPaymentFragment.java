@@ -95,7 +95,7 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class ExpressPaymentFragment extends BaseFragment implements ExpressPayment.View, ViewPager.OnPageChangeListener,
-    SplitPaymentHeaderAdapter.SplitListener, PaymentMethodFragment.DisabledDetailDialogLauncher,
+    SplitPaymentHeaderAdapter.SplitListener, PaymentMethodFragment.DisabledDetailDialogLauncher, PaymentMethodFragment.CardActionListener,
     OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener, TitlePagerAdapter.InstallmentChanged,
     PayButton.Handler, GenericDialog.Listener, BackHandler {
 
@@ -381,7 +381,7 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
             session.getTracker(),
             session.getExpressMetadataRepository(),
             session.getPayerPaymentMethodRepository(),
-            configurationModule.getPaymentMethodTypeSelectionRepository(),
+            session.getPaymentMethodTypeSelectionRepository(),
             session.getModalRepository());
     }
 
@@ -628,6 +628,11 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
     @Override
     public int getRequestCode() {
         return REQ_CODE_DISABLE_DIALOG;
+    }
+
+    @Override
+    public void onCardPaymentMethodChange(@NonNull final String paymentMethodType) {
+        presenter.onPaymentMethodTypeChanged(paymentMethodType);
     }
 
     @Override
