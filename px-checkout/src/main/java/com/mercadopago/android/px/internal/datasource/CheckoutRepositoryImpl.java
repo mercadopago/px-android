@@ -27,7 +27,7 @@ import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.CheckoutFeatures;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
-import com.mercadopago.android.px.model.internal.ExpressMetadataInternal;
+import com.mercadopago.android.px.model.internal.OneTapItem;
 import com.mercadopago.android.px.model.internal.InitRequest;
 import com.mercadopago.android.px.model.internal.CheckoutResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -89,7 +89,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
 
     @NonNull
     @Override
-    public MPCall<CheckoutResponse> init() {
+    public MPCall<CheckoutResponse> checkout() {
         return newCall(getPostResponse());
     }
 
@@ -102,7 +102,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
         paymentSettingRepository.configure(checkoutResponse.getConfiguration());
         experimentsRepository.configure(checkoutResponse.getExperiments());
         payerPaymentMethodRepository.configure(checkoutResponse.getPayerPaymentMethods());
-        expressMetadataRepository.configure(checkoutResponse.getOneTap());
+        expressMetadataRepository.configure(checkoutResponse.getOneTapItems());
         paymentMethodRepository.configure(checkoutResponse.getAvailablePaymentMethods());
         modalRepository.configure(checkoutResponse.getModals());
         payerComplianceRepository.configure(checkoutResponse.getPayerCompliance());
@@ -110,7 +110,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
         discountRepository.configure(checkoutResponse.getDiscountsConfigurations());
 
         disabledPaymentMethodRepository.storeDisabledPaymentMethodsIds(
-            new ExpressMetadataToDisabledIdMapper().map(checkoutResponse.getOneTap()));
+            new ExpressMetadataToDisabledIdMapper().map(checkoutResponse.getOneTapItems()));
 
         tracker.setExperiments(experimentsRepository.getExperiments());
     }
@@ -206,7 +206,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
             @Override
             public void success(final CheckoutResponse checkoutResponse) {
                 refreshRetriesAvailable--;
-                final List<ExpressMetadataInternal> oneTap = checkoutResponse.getOneTap();
+                final List<OneTapItem> oneTap = checkoutResponse.getOneTapItems();
                 for (final ExpressMetadata node : oneTap) {
                     if (node.isCard() && node.getCard().getId().equals(cardId)) {
                         refreshRetriesAvailable = MAX_REFRESH_RETRIES;

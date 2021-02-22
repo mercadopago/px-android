@@ -59,7 +59,7 @@ public class CheckoutPresenterTest {
     @Test
     public void whenCheckoutInitializedAndPaymentMethodSearchFailsThenShowError() {
         final ApiException apiException = mock(ApiException.class);
-        when(checkoutRepository.init()).thenReturn(new StubFailMpCall<>(apiException));
+        when(checkoutRepository.checkout()).thenReturn(new StubFailMpCall<>(apiException));
 
         presenter.initialize();
 
@@ -70,11 +70,11 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenChoHasPreferenceAndPaymentMethodRetrievedShowOneTap() {
-        when(checkoutRepository.init()).thenReturn(new StubSuccessMpCall<>(CheckoutResponseStub.FULL.get()));
+        when(checkoutRepository.checkout()).thenReturn(new StubSuccessMpCall<>(CheckoutResponseStub.FULL.get()));
 
         presenter.initialize();
 
-        verify(checkoutRepository).init();
+        verify(checkoutRepository).checkout();
         verify(checkoutView).showProgress();
         verify(checkoutView).hideProgress();
         verify(checkoutView).showOneTap(any(Variant.class));

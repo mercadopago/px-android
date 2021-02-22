@@ -3,7 +3,7 @@ package com.mercadopago.android.px.model.internal
 import android.os.Parcel
 import com.mercadopago.android.px.model.ExpressMetadata
 
-class ExpressMetadataInternal(parcel: Parcel?) : ExpressMetadata(parcel) {
+class OneTapItem(parcel: Parcel?) : ExpressMetadata(parcel) {
 
     private lateinit var applications: List<Application>
 
