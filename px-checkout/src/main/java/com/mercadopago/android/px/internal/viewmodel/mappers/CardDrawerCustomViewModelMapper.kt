@@ -10,9 +10,9 @@ object CardDrawerCustomViewModelMapper {
 
     fun mapToSwitchModel(cardDrawerSwitch: CardDrawerSwitch?) = cardDrawerSwitch?.run {
         val states = SwitchStates(
-            getStateForCardDrawer(states.checkedState),
-            getStateForCardDrawer(states.uncheckedState),
-            getStateForCardDrawer(states.disabledState)
+            getStateForCardDrawer(states.checked),
+            getStateForCardDrawer(states.unchecked),
+            getStateForCardDrawer(states.disabled)
         )
         SwitchModel(states, getOptionsForCardDrawer(options), backgroundColor, default)
     }

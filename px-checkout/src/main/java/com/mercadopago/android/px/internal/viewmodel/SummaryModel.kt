@@ -6,5 +6,5 @@ internal data class SummaryModel(
     var currentSelection: String?,
     val summaryViewModelMap: Map<String, SummaryView.Model>
 ) {
-    fun getSelectionModel() = currentSelection?.let { summaryViewModelMap[it] } ?: summaryViewModelMap.values.first()
+    fun getSelectedModel() = currentSelection?.let { summaryViewModelMap[it] } ?: summaryViewModelMap.values.first()
 }

@@ -99,7 +99,7 @@ import java.util.List;
     @NonNull private final ChargeRepository chargeRepository;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final ExperimentsRepository experimentsRepository;
-    @NonNull final PayerComplianceRepository payerComplianceRepository;
+    @NonNull private final PayerComplianceRepository payerComplianceRepository;
     @NonNull private final TrackingRepository trackingRepository;
     @NonNull private final PaymentMethodDescriptorMapper paymentMethodDescriptorMapper;
     @NonNull private final CustomTextsRepository customTextsRepository;

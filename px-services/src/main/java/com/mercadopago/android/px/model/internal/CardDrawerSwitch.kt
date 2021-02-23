@@ -13,9 +13,9 @@ data class CardDrawerSwitch(
 
     @Parcelize
     data class SwitchStates(
-        val checkedState: State,
-        val uncheckedState: State,
-        val disabledState: State
+        val checked: State,
+        val unchecked: State,
+        val disabled: State
     ): Parcelable {
 
         @Parcelize

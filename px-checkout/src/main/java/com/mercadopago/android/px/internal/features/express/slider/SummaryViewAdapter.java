@@ -23,7 +23,7 @@ public class SummaryViewAdapter extends HubableAdapter<List<SummaryModel>, Summa
         final int index,
         final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
-        final SummaryView.Model nextModel = data.get(index).getSelectionModel();
+        final SummaryView.Model nextModel = data.get(index).getSelectedModel();
         if (!nextModel.equals(currentModel)) {
             view.update(nextModel);
         }
@@ -37,7 +37,7 @@ public class SummaryViewAdapter extends HubableAdapter<List<SummaryModel>, Summa
         final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         data.get(currentIndex).setCurrentSelection(key);
-        final SummaryView.Model nextModel = data.get(currentIndex).getSelectionModel();
+        final SummaryView.Model nextModel = data.get(currentIndex).getSelectedModel();
 
         if (!nextModel.equals(currentModel)) {
             view.update(nextModel);
@@ -58,7 +58,7 @@ public class SummaryViewAdapter extends HubableAdapter<List<SummaryModel>, Summa
             return;
         }
         //We only animate if the models are different
-        if (!currentModel.equals(data.get(nextIndex).getSelectionModel())) {
+        if (!currentModel.equals(data.get(nextIndex).getSelectedModel())) {
             if (goingTo == GoingToModel.BACKWARDS) {
                 positionOffset = 1.0f - positionOffset;
             }
