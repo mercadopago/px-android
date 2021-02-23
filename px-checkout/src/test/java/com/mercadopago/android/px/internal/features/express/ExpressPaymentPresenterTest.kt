@@ -21,7 +21,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod
 import com.mercadopago.android.px.model.internal.CheckoutResponse
-import com.mercadopago.android.px.model.internal.ExpressMetadataInternal
+import com.mercadopago.android.px.model.internal.OneTapItem
 import com.mercadopago.android.px.preferences.CheckoutPreference
 import com.mercadopago.android.px.tracking.internal.MPTracker
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent
@@ -32,6 +32,7 @@ import com.mercadopago.android.px.utils.StubFailMpCall
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito.*
@@ -68,7 +69,7 @@ class ExpressPaymentPresenterTest {
     private lateinit var amountRepository: AmountRepository
 
     @Mock
-    private lateinit var expressMetadataInternal: ExpressMetadataInternal
+    private lateinit var oneTapItem: OneTapItem
 
     @Mock
     private lateinit var amountConfiguration: AmountConfiguration
@@ -115,6 +116,9 @@ class ExpressPaymentPresenterTest {
     @Mock
     private lateinit var modalRepository: ModalRepository
 
+    @Mock
+    private lateinit var paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository
+
     private lateinit var expressPaymentPresenter: ExpressPaymentPresenter
 
     @Before
@@ -129,28 +133,31 @@ class ExpressPaymentPresenterTest {
         `when`(paymentSettingRepository.checkoutPreference).thenReturn(preference)
         `when`(paymentSettingRepository.advancedConfiguration).thenReturn(advancedConfiguration)
         `when`(advancedConfiguration.dynamicDialogConfiguration).thenReturn(dynamicDialogConfiguration)
-        `when`(expressMetadataInternal.isCard).thenReturn(true)
-        `when`(expressMetadataInternal.card).thenReturn(cardMetadata)
+        `when`(paymentMethodTypeSelectionRepository.get(anyString())).thenReturn("credit_card")
+        `when`(oneTapItem.isCard).thenReturn(true)
+        `when`(oneTapItem.card).thenReturn(cardMetadata)
         `when`(cardMetadata.displayInfo).thenReturn(mock(CardDisplayInfo::class.java))
-        `when`(expressMetadataInternal.customOptionId).thenReturn("123")
-        `when`(expressMetadataInternal.status).thenReturn(mock(StatusMetadata::class.java))
+        `when`(oneTapItem.customOptionId).thenReturn("123")
+        `when`(oneTapItem.getDefaultPaymentMethodType()).thenReturn("credit_card")
+        `when`(oneTapItem.status).thenReturn(mock(StatusMetadata::class.java))
         `when`(discountRepository.getCurrentConfiguration()).thenReturn(discountConfigurationModel)
-        `when`(discountRepository.getConfigurationFor("123", )).thenReturn(discountConfigurationModel)
-        `when`(amountConfigurationRepository.getConfigurationFor("123", )).thenReturn(amountConfiguration)
-        `when`(expressMetadataRepository.value).thenReturn(listOf(expressMetadataInternal))
+        `when`(discountRepository.getConfigurationFor("123", "credit_card")).thenReturn(discountConfigurationModel)
+        `when`(amountConfigurationRepository.getConfigurationFor("123", "credit_card")).thenReturn(amountConfiguration)
+        `when`(expressMetadataRepository.value).thenReturn(listOf(oneTapItem))
         expressPaymentPresenter = ExpressPaymentPresenter(paymentSettingRepository, disabledPaymentMethodRepository,
             payerCostSelectionRepository, discountRepository, amountRepository, checkoutRepository,
             amountConfigurationRepository, chargeRepository, escManagerBehaviour, paymentMethodDrawableItemMapper,
             experimentsRepository, payerComplianceRepository, trackingRepository,
             mock(PaymentMethodDescriptorMapper::class.java), mock(CustomTextsRepository::class.java),
             mock(AmountDescriptorMapper::class.java), tracker, expressMetadataRepository, payerPaymentMethodRepository,
+            paymentMethodTypeSelectionRepository,
             modalRepository)
         verifyAttachView()
     }
 
     @Test
     fun whenFailToRetrieveCheckoutThenShowError() {
-        `when`<MPCall<CheckoutResponse>>(checkoutRepository.init()).thenReturn(StubFailMpCall(mock(ApiException::class.java)))
+        `when`<MPCall<CheckoutResponse>>(checkoutRepository.checkout()).thenReturn(StubFailMpCall(mock(ApiException::class.java)))
         expressPaymentPresenter.handleDeepLink()
         verify(view).showError(any(MercadoPagoError::class.java))
     }
@@ -199,7 +206,7 @@ class ExpressPaymentPresenterTest {
         `when`(state.paymentMethodIndex).thenReturn(paymentMethodIndex)
         `when`(state.splitSelectionState).thenReturn(splitSelectionState)
         val payerCostIndex = 2
-        `when`(payerCostSelectionRepository.get(expressMetadataInternal.customOptionId)).thenReturn(payerCostIndex)
+        `when`(payerCostSelectionRepository.get(oneTapItem.customOptionId)).thenReturn(payerCostIndex)
 
         expressPaymentPresenter.restoreState(state)
         expressPaymentPresenter.onInstallmentSelectionCanceled()
@@ -246,7 +253,7 @@ class ExpressPaymentPresenterTest {
         val disabledPaymentMethod = mock(DisabledPaymentMethod::class.java)
         val statusMetadata = mock(StatusMetadata::class.java)
         `when`(disabledPaymentMethodRepository.getDisabledPaymentMethod(anyString())).thenReturn(disabledPaymentMethod)
-        `when`(expressMetadataInternal.status).thenReturn(statusMetadata)
+        `when`(oneTapItem.status).thenReturn(statusMetadata)
 
         expressPaymentPresenter.onDisabledDescriptorViewClick()
 

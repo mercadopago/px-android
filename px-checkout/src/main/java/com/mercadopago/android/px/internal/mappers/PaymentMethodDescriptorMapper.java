@@ -16,10 +16,10 @@ import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.InterestFree;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentTypes;
-import com.mercadopago.android.px.model.internal.ExpressMetadataInternal;
+import com.mercadopago.android.px.model.internal.OneTapItem;
 import com.mercadopago.android.px.model.internal.Text;
 
-public class PaymentMethodDescriptorMapper extends Mapper<ExpressMetadataInternal, PaymentMethodDescriptorView.Model> {
+public class PaymentMethodDescriptorMapper extends Mapper<OneTapItem, PaymentMethodDescriptorView.Model> {
 
     @NonNull private final PaymentSettingRepository paymentSettings;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
@@ -40,34 +40,34 @@ public class PaymentMethodDescriptorMapper extends Mapper<ExpressMetadataInterna
     }
 
     @Override
-    public PaymentMethodDescriptorView.Model map(@NonNull final ExpressMetadataInternal expressMetadata) {
-        final String customOptionId = expressMetadata.getCustomOptionId();
+    public PaymentMethodDescriptorView.Model map(@NonNull final OneTapItem oneTapItem) {
+        final String customOptionId = oneTapItem.getCustomOptionId();
         final String paymentTypeId = paymentMethodTypeSelectionRepository.get(customOptionId);
         final Currency currency = paymentSettings.getCurrency();
 
         if (disabledPaymentMethodRepository.hasPaymentMethodId(customOptionId)) {
-            return DisabledPaymentMethodDescriptorModel.createFrom(expressMetadata.getStatus().getMainMessage());
-        } else if (PaymentTypes.isCreditCardPaymentType(paymentTypeId) || expressMetadata.isConsumerCredits()) {
-            return mapCredit(expressMetadata);
+            return DisabledPaymentMethodDescriptorModel.createFrom(oneTapItem.getStatus().getMainMessage());
+        } else if (PaymentTypes.isCreditCardPaymentType(paymentTypeId) || oneTapItem.isConsumerCredits()) {
+            return mapCredit(oneTapItem);
         } else if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
             return DebitCardDescriptorModel
                 .createFrom(currency, amountConfigurationRepository.getConfigurationFor(customOptionId, paymentTypeId));
-        } else if (PaymentTypes.isAccountMoney(expressMetadata.getPaymentMethodId())) {
-            return AccountMoneyDescriptorModel.createFrom(expressMetadata.getAccountMoney(), currency,
-                amountRepository.getAmountToPay(expressMetadata.getPaymentTypeId(), (PayerCost) null));
+        } else if (PaymentTypes.isAccountMoney(oneTapItem.getPaymentMethodId())) {
+            return AccountMoneyDescriptorModel.createFrom(oneTapItem.getAccountMoney(), currency,
+                amountRepository.getAmountToPay(oneTapItem.getPaymentTypeId(), (PayerCost) null));
         } else {
             return EmptyInstallmentsDescriptorModel.create();
         }
     }
 
-    private PaymentMethodDescriptorView.Model mapCredit(@NonNull final ExpressMetadataInternal expressMetadata) {
+    private PaymentMethodDescriptorView.Model mapCredit(@NonNull final OneTapItem oneTapItem) {
         //This model is useful for Credit Card and Consumer Credits
         // FIXME change model to represent more than just credit cards.
         final Text installmentsRightHeader =
-            expressMetadata.hasBenefits() ? expressMetadata.getBenefits().getInstallmentsHeader() : null;
+            oneTapItem.hasBenefits() ? oneTapItem.getBenefits().getInstallmentsHeader() : null;
         final InterestFree interestFree =
-            expressMetadata.hasBenefits() ? expressMetadata.getBenefits().getInterestFree() : null;
-        final String customOptionId = expressMetadata.getCustomOptionId();
+            oneTapItem.hasBenefits() ? oneTapItem.getBenefits().getInterestFree() : null;
+        final String customOptionId = oneTapItem.getCustomOptionId();
         final String paymentTypeId = paymentMethodTypeSelectionRepository.get(customOptionId);
         return CreditCardDescriptorModel
             .createFrom(paymentSettings.getCurrency(), installmentsRightHeader, interestFree,

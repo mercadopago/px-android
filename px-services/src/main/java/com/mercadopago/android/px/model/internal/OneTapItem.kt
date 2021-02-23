@@ -2,18 +2,19 @@ package com.mercadopago.android.px.model.internal
 
 import android.os.Parcel
 import com.mercadopago.android.px.model.ExpressMetadata
+import java.lang.UnsupportedOperationException
 
-class ExpressMetadataInternal(parcel: Parcel?) : ExpressMetadata(parcel) {
+class OneTapItem(parcel: Parcel?) : ExpressMetadata(parcel) {
 
     private var applications: List<Application>? = null
 
     init {
-        applications?.let { parcel?.readList(it, Application::class.java.classLoader) }
+        throw UnsupportedOperationException("Parcelable implementation not available")
     }
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
         super.writeToParcel(dest, flags)
-        dest?.writeList(applications)
+        throw UnsupportedOperationException("Parcelable implementation not available")
     }
 
     fun getApplications() = applications

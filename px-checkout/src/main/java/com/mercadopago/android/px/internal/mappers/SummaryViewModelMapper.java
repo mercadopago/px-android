@@ -22,7 +22,7 @@ import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.model.internal.Application;
-import com.mercadopago.android.px.model.internal.ExpressMetadataInternal;
+import com.mercadopago.android.px.model.internal.OneTapItem;
 import com.mercadopago.android.px.model.internal.SummaryInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInternal, SummaryModel,
+public class SummaryViewModelMapper extends CacheableMapper<OneTapItem, SummaryModel,
     SummaryViewModelMapper.Key> {
 
     @NonNull private final Currency currency;
@@ -69,7 +69,7 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInter
     }
 
     @Override
-    public SummaryModel map(@NonNull final ExpressMetadataInternal expressPaymentMethod) {
+    public SummaryModel map(@NonNull final OneTapItem expressPaymentMethod) {
         return createModel(expressPaymentMethod);
     }
 
@@ -81,9 +81,9 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInter
     }
 
     @NonNull
-    private SummaryModel createModel(@NonNull final ExpressMetadataInternal expressMetadata) {
-        final String customOptionId = expressMetadata.getCustomOptionId();
-        final List<Application> applications = expressMetadata.getApplications();
+    private SummaryModel createModel(@NonNull final OneTapItem oneTapItem) {
+        final String customOptionId = oneTapItem.getCustomOptionId();
+        final List<Application> applications = oneTapItem.getApplications();
         final Map<String, SummaryView.Model> map = new HashMap<>();
 
         if (applications != null) {
@@ -96,7 +96,7 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInter
         } else {
             summaryViewModelToMap(
                 customOptionId,
-                expressMetadata.getDefaultPaymentMethodType(),
+                oneTapItem.getDefaultPaymentMethodType(),
                 map);
         }
 
@@ -158,17 +158,17 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressMetadataInter
 
     @Override
     protected Key getKey(
-        @NonNull final ExpressMetadataInternal expressPaymentMethod) {
-        final String customOptionId = expressPaymentMethod.getCustomOptionId();
+        @NonNull final OneTapItem oneTapItem) {
+        final String customOptionId = oneTapItem.getCustomOptionId();
 
         final List<PaymentTypeChargeRule> chargeRules = new ArrayList<>();
         final List<DiscountConfigurationModel> discountConfigurationModels = new ArrayList<>();
         final List<Boolean> hasSplits = new ArrayList<>();
-        String paymentMethodType = expressPaymentMethod.getDefaultPaymentMethodType();
+        String paymentMethodType = oneTapItem.getDefaultPaymentMethodType();
         AmountConfiguration amountConfiguration;
 
-        if (expressPaymentMethod.getApplications() != null && !expressPaymentMethod.getApplications().isEmpty()) {
-            for (final Application application : expressPaymentMethod.getApplications()) {
+        if (oneTapItem.getApplications() != null && !oneTapItem.getApplications().isEmpty()) {
+            for (final Application application : oneTapItem.getApplications()) {
                 paymentMethodType = application.getPaymentMethod().getType();
                 amountConfiguration = getAmountConfiguration(customOptionId, paymentMethodType);
                 addKeyDataList(

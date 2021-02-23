@@ -17,7 +17,7 @@ import com.mercadopago.android.px.internal.features.express.slider.PaymentMethod
 import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodLowResDrawer
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesPayerCost
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView
-import com.mercadopago.android.px.model.internal.ExpressMetadataInternal
+import com.mercadopago.android.px.model.internal.OneTapItem
 
 internal class RetryPaymentFragment : Fragment(), PaymentMethodFragment.DisabledDetailDialogLauncher {
 
@@ -38,7 +38,7 @@ internal class RetryPaymentFragment : Fragment(), PaymentMethodFragment.Disabled
         paymentMethodTitle = view.findViewById(R.id.payment_method_title)
     }
 
-    fun init(model: Model, methodData: ExpressMetadataInternal?) {
+    fun init(model: Model, methodData: OneTapItem?) {
         message.text = model.message
         methodData?.let {
             addCard(it)
@@ -53,7 +53,7 @@ internal class RetryPaymentFragment : Fragment(), PaymentMethodFragment.Disabled
         cvvRemedy.listener = listener
     }
 
-    private fun addCard(methodData: ExpressMetadataInternal) {
+    private fun addCard(methodData: OneTapItem) {
         childFragmentManager.beginTransaction().apply {
             val drawableFragmentItem = MapperProvider.getPaymentMethodDrawableItemMapper().map(methodData)!!
             val paymentMethodFragment = drawableFragmentItem.draw(PaymentMethodLowResDrawer()) as PaymentMethodFragment<*>
@@ -63,7 +63,7 @@ internal class RetryPaymentFragment : Fragment(), PaymentMethodFragment.Disabled
         }
     }
 
-    private fun showPaymentMethodDescriptor(methodData: ExpressMetadataInternal, payerCost: RemediesPayerCost?) {
+    private fun showPaymentMethodDescriptor(methodData: OneTapItem, payerCost: RemediesPayerCost?) {
         paymentMethodDescriptor.visible()
         paymentMethodTitle.visible()
         if (!paymentMethodTitle.text.contains(":")) paymentMethodTitle.append(":") // FIXME

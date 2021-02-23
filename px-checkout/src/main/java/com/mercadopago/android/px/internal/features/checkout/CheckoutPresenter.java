@@ -54,7 +54,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements C
         if (!withPrefetch) {
             getView().showProgress();
             if (isViewAttached()) {
-                checkoutRepository.init().enqueue(new Callback<CheckoutResponse>() {
+                checkoutRepository.checkout().enqueue(new Callback<CheckoutResponse>() {
                     @Override
                     public void success(final CheckoutResponse checkoutResponse) {
                         showOneTap();

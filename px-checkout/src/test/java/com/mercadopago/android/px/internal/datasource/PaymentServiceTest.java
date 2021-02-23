@@ -21,6 +21,7 @@ import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodRepository;
+import com.mercadopago.android.px.internal.repository.PaymentMethodTypeSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -103,6 +104,7 @@ public class PaymentServiceTest {
     @Mock private FromPayerPaymentMethodIdToCardMapper fromPayerPaymentMethodIdToCardMapper;
     @Mock private PaymentMethodMapper paymentMethodMapper;
     @Mock private PaymentMethodRepository paymentMethodRepository;
+    @Mock private PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository;
 
     private PaymentService paymentService;
 
@@ -126,7 +128,8 @@ public class PaymentServiceTest {
             fileManager,
             fromPayerPaymentMethodIdToCardMapper,
             paymentMethodMapper,
-            paymentMethodRepository
+            paymentMethodRepository,
+            paymentMethodTypeSelectionRepository
         );
 
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(mock(CheckoutPreference.class));
@@ -136,6 +139,7 @@ public class PaymentServiceTest {
         when(discountRepository.getCurrentConfiguration()).thenReturn(WITHOUT_DISCOUNT);
         when(userSelectionRepository.getPaymentMethod()).thenReturn(paymentMethod);
         when(paymentMethod.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
+        when(paymentMethodTypeSelectionRepository.get(anyString())).thenReturn(PaymentTypes.CREDIT_CARD);
         //noinspection unchecked
         when(paymentMethodMapper.map((Pair<String, String>) any())).thenReturn(paymentMethod);
     }
@@ -143,10 +147,10 @@ public class PaymentServiceTest {
     private PaymentConfiguration mockPaymentConfiguration(@NonNull final ExpressMetadata expressMetadata,
         @Nullable final PayerCost payerCost) {
         final AmountConfiguration amountConfiguration = mock(AmountConfiguration.class);
-        when(amountConfigurationRepository.getConfigurationFor(anyString(), )).thenReturn(amountConfiguration);
+        when(amountConfigurationRepository.getConfigurationFor(anyString(), anyString())).thenReturn(amountConfiguration);
         when(amountConfiguration.getCurrentPayerCost(anyBoolean(), anyInt())).thenReturn(payerCost);
         return new FromExpressMetadataToPaymentConfiguration(amountConfigurationRepository, splitSelectionState,
-            payerCostSelectionRepository).map(expressMetadata);
+            payerCostSelectionRepository, paymentMethodTypeSelectionRepository).map(expressMetadata);
     }
 
     @Test

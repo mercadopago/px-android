@@ -14,7 +14,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.CardDrawerCustomVie
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem.Parameters
 import com.mercadopago.android.px.model.AccountMoneyDisplayInfo
 import com.mercadopago.android.px.model.CustomSearchItem
-import com.mercadopago.android.px.model.internal.ExpressMetadataInternal
+import com.mercadopago.android.px.model.internal.OneTapItem
 import com.mercadopago.android.px.model.one_tap.CheckoutBehaviour
 
 internal class PaymentMethodDrawableItemMapper(
@@ -25,9 +25,9 @@ internal class PaymentMethodDrawableItemMapper(
     private val payerPaymentMethodRepository: PayerPaymentMethodRepository,
     private val modalRepository: ModalRepository,
     private val paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository
-) : NonNullMapper<ExpressMetadataInternal, DrawableFragmentItem?>() {
+) : NonNullMapper<OneTapItem, DrawableFragmentItem?>() {
 
-    override fun map(value: ExpressMetadataInternal): DrawableFragmentItem? {
+    override fun map(value: OneTapItem): DrawableFragmentItem? {
         val genericDialogItem = value.getBehaviour(CheckoutBehaviour.Type.TAP_CARD)?.modal?.let { modal ->
             modalRepository.value[modal]?.let {
                 FromModalToGenericDialogItem(ActionType.DISMISS, modal).map(it)
@@ -52,13 +52,13 @@ internal class PaymentMethodDrawableItemMapper(
         } ?: AccountMoneyDrawableFragmentItem(parameters, CardDrawerStyle.ACCOUNT_MONEY_DEFAULT)
 
     private fun getParameters(
-        expressMetadata: ExpressMetadataInternal,
+        oneTapItem: OneTapItem,
         customSearchItems: List<CustomSearchItem>,
         genericDialogItem: GenericDialogItem?
     ): Parameters {
-        val customOptionId = expressMetadata.customOptionId
+        val customOptionId = oneTapItem.customOptionId
         val paymentTypeId = paymentMethodTypeSelectionRepository.get(customOptionId)
-        val displayInfo = expressMetadata.displayInfo
+        val displayInfo = oneTapItem.displayInfo
         val charge = chargeRepository.getChargeRule(paymentTypeId)
         val (description, issuerName) = customSearchItems.firstOrNull { c -> c.id == customOptionId }?.let {
             Pair(it.description.orEmpty(), it.issuer?.name.orEmpty())
@@ -67,10 +67,10 @@ internal class PaymentMethodDrawableItemMapper(
         return Parameters(
             customOptionId,
             paymentTypeId,
-            expressMetadata.status,
+            oneTapItem.status,
             displayInfo?.bottomDescription,
             charge?.message,
-            expressMetadata.benefits?.reimbursement,
+            oneTapItem.benefits?.reimbursement,
             disabledPaymentMethodRepository.getDisabledPaymentMethod(customOptionId),
             description,
             issuerName,

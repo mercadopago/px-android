@@ -18,6 +18,7 @@ public class ConfigurationSolverTest {
 
     private static final String ACCOUNT_MONEY_SAMPLE_ID = "account_money";
     private static final String CARD_SAMPLE_ID = "1234";
+    private static final String CARD_PM_TYPE = "debit_card";
 
     private static final String HASH_SAMPLE_ACCOUNT_MONEY_CONFIGURATION = "HASH_ACCOUNT_MONEY_CONFIGURATION";
     private static final String HASH_SAMPLE_SAVED_CARD_CONFIGURATION = "HASH_SAVED_CARD_CONFIGURATION";
@@ -38,10 +39,12 @@ public class ConfigurationSolverTest {
         discountConfigurationSolver = new ConfigurationSolverImpl(payerPaymentMethodRepository);
 
         when(accountMoneyCustomSearchItem.getId()).thenReturn(ACCOUNT_MONEY_SAMPLE_ID);
+        when(accountMoneyCustomSearchItem.getType()).thenReturn(ACCOUNT_MONEY_SAMPLE_ID);
         when(accountMoneyCustomSearchItem.getDefaultAmountConfiguration())
             .thenReturn(HASH_SAMPLE_ACCOUNT_MONEY_CONFIGURATION);
 
         when(cardCustomSearchItem.getId()).thenReturn(CARD_SAMPLE_ID);
+        when(cardCustomSearchItem.getType()).thenReturn(CARD_PM_TYPE);
         when(cardCustomSearchItem.getDefaultAmountConfiguration()).thenReturn(HASH_SAMPLE_SAVED_CARD_CONFIGURATION);
 
         when(payerPaymentMethodRepository.getValue()).thenReturn(customSearchItems);
@@ -50,17 +53,17 @@ public class ConfigurationSolverTest {
     @Test
     public void whenHasConfigurationByAccountMoneyIdThenReturnAccountMoneyConfigurationHash() {
         assertEquals(HASH_SAMPLE_ACCOUNT_MONEY_CONFIGURATION,
-            discountConfigurationSolver.getConfigurationHashFor(ACCOUNT_MONEY_SAMPLE_ID, ));
+            discountConfigurationSolver.getConfigurationHashFor(ACCOUNT_MONEY_SAMPLE_ID, ACCOUNT_MONEY_SAMPLE_ID));
     }
 
     @Test
     public void whenHasConfigurationByCardIdIdThenReturnCardConfigurationHash() {
         assertEquals(HASH_SAMPLE_SAVED_CARD_CONFIGURATION,
-            discountConfigurationSolver.getConfigurationHashFor(CARD_SAMPLE_ID, ));
+            discountConfigurationSolver.getConfigurationHashFor(CARD_SAMPLE_ID, CARD_PM_TYPE));
     }
 
     @Test
     public void whenHasNotConfigurationByIdThenReturnEmptyConfiguration() {
-        assertEquals("", discountConfigurationSolver.getConfigurationHashFor("5678", ));
+        assertEquals("", discountConfigurationSolver.getConfigurationHashFor("5678", "credit_card"));
     }
 }

@@ -91,11 +91,11 @@ internal class DisplayDataUseCaseTest {
         val resultBusinessCaptor = argumentCaptor<BusinessSecurityCodeDisplayData>()
         val cardId = "268434496"
         val checkoutResponse = loadInitResponseWithOneTap()
-        val displayInfo = checkoutResponse.oneTap?.find { it.isCard && it.card.id == cardId }?.card?.displayInfo
+        val displayInfo = checkoutResponse.oneTapItems?.find { it.isCard && it.card.id == cardId }?.card?.displayInfo
         `when`(cardParams.id).thenReturn(cardId)
         `when`(cardParams.securityCodeLength).thenReturn(3)
         `when`(cardParams.securityCodeLocation).thenReturn("back")
-        `when`(expressMetadataRepository.value).thenReturn(checkoutResponse.oneTap)
+        `when`(expressMetadataRepository.value).thenReturn(checkoutResponse.oneTapItems)
         val expectedResult = SecurityCodeDisplayData(
             LazyString(0),
             LazyString(0, cardParams.securityCodeLength.toString()),
@@ -127,7 +127,7 @@ internal class DisplayDataUseCaseTest {
         val checkoutResponse = loadInitResponseWithGroup()
         `when`(cardParams.securityCodeLength).thenReturn(3)
         `when`(cardParams.securityCodeLocation).thenReturn("back")
-        `when`(expressMetadataRepository.value).thenReturn(checkoutResponse.oneTap)
+        `when`(expressMetadataRepository.value).thenReturn(checkoutResponse.oneTapItems)
         val expectedResult = BusinessSecurityCodeDisplayData(
             LazyString(0),
             LazyString(0, cardParams.securityCodeLength.toString()),
