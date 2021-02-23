@@ -33,7 +33,7 @@ public class SummaryViewAdapter extends HubableAdapter<List<SummaryModel>, Summa
     }
 
     @Override
-    public void updateDataBySelection(@NonNull final String key,
+    public void updateData(@NonNull final String key,
         final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         data.get(currentIndex).setCurrentSelection(key);

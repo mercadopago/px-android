@@ -27,7 +27,7 @@ public abstract class ViewAdapter<T, V extends View> {
         // Do nothing
     }
 
-    public void updateDataBySelection(@NonNull final String key, final int payerCostSelected,
+    public void updateData(@NonNull final String key, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         // Do nothing
     }

@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.features.express.slider;
 import androidx.annotation.NonNull;
 import android.view.View;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
-import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.SummaryModel;
@@ -76,10 +75,10 @@ public class HubAdapter extends ViewAdapter<HubAdapter.Model, View> {
     }
 
     @Override
-    public void updateDataBySelection(@NonNull final String key, final int payerCostSelected,
+    public void updateData(@NonNull final String key, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         for (final HubableAdapter adapter : adapters) {
-            adapter.updateDataBySelection(key, payerCostSelected, splitSelectionState);
+            adapter.updateData(key, payerCostSelected, splitSelectionState);
         }
     }
 }

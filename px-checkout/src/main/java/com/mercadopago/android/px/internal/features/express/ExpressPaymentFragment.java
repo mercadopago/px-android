@@ -576,7 +576,7 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
     @Override
     public void updateViewForPaymentMethodType(@NonNull final String paymentMethodType, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
-        hubAdapter.updateDataBySelection(paymentMethodType, payerCostSelected, splitSelectionState);
+        hubAdapter.updateData(paymentMethodType, payerCostSelected, splitSelectionState);
     }
 
     /* default */ void onInstallmentSelected(final PayerCost payerCostSelected) {
