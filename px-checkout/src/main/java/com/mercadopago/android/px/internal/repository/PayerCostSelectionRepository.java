@@ -4,9 +4,9 @@ import androidx.annotation.NonNull;
 
 public interface PayerCostSelectionRepository {
 
-    int get(@NonNull final String paymentMethodId);
+    int get(@NonNull final String paymentMethodId, @NonNull final String paymentMethodType);
 
-    void save(@NonNull final String paymentMethodId, final int selectedPayerCost);
+    void save(@NonNull final String paymentMethodId, @NonNull final String paymentMethodType, final int selectedPayerCost);
 
     void reset();
 }

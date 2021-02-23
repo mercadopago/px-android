@@ -5,12 +5,13 @@ import android.view.View;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.TitlePager;
 import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentMethodDescriptorModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.util.AccessibilityUtilsKt.executeIfAccessibilityTalkBackEnable;
 
-public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescriptorView.Model>, TitlePager> {
+public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescriptorModel>, TitlePager> {
 
     private static final int NO_SELECTED = -1;
 
@@ -18,7 +19,7 @@ public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescript
     private PaymentMethodDescriptorView currentView;
     private PaymentMethodDescriptorView nextView;
     private int currentIndex = NO_SELECTED;
-    private InstallmentChanged installmentChanged;
+    private final InstallmentChanged installmentChanged;
 
     public interface InstallmentChanged {
         void installmentSelectedChanged(final int installment);
@@ -42,6 +43,26 @@ public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescript
     }
 
     @Override
+    public void updateData(@NonNull final String key, final int payerCostSelected,
+        @NonNull final SplitSelectionState splitSelectionState) {
+        data.get(currentIndex).setCurrentSelection(key);
+
+        final PaymentMethodDescriptorView.Model currentModel = data.get(currentIndex).getSelectedModel();
+
+        currentModel.setCurrentPayerCost(payerCostSelected);
+        currentModel.setSplit(splitSelectionState.userWantsToSplit());
+        currentView.update(currentModel);
+        executeIfAccessibilityTalkBackEnable(currentView.getContext(), () -> {
+            currentView.updateContentDescription(currentModel);
+            return null;
+        });
+
+        if (installmentChanged != null) {
+            installmentChanged.installmentSelectedChanged(currentModel.getCurrentInstalment());
+        }
+    }
+
+    @Override
     public void updatePosition(final float positionOffset, final int position) {
         final GoingToModel goingTo = position < currentIndex ? GoingToModel.BACKWARDS : GoingToModel.FORWARD;
         view.updatePosition(positionOffset, goingTo);
@@ -59,11 +80,11 @@ public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescript
     private void refreshData(final int currentIndex, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         if (currentIndex > 0) {
-            final PaymentMethodDescriptorView.Model previousModel = data.get(currentIndex - 1);
+            final PaymentMethodDescriptorView.Model previousModel = data.get(currentIndex - 1).getSelectedModel();
             previousView.update(previousModel);
         }
 
-        final PaymentMethodDescriptorView.Model currentModel = data.get(currentIndex);
+        final PaymentMethodDescriptorView.Model currentModel = data.get(currentIndex).getSelectedModel();
 
         currentModel.setCurrentPayerCost(payerCostSelected);
         currentModel.setSplit(splitSelectionState.userWantsToSplit());
@@ -78,13 +99,13 @@ public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescript
         }
 
         if (currentIndex + 1 < data.size()) {
-            final PaymentMethodDescriptorView.Model nextModel = data.get(currentIndex + 1);
+            final PaymentMethodDescriptorView.Model nextModel = data.get(currentIndex + 1).getSelectedModel();
             nextView.update(nextModel);
         }
     }
 
     @Override
-    public List<PaymentMethodDescriptorView.Model> getNewModels(final HubAdapter.Model model) {
+    public List<PaymentMethodDescriptorModel> getNewModels(final HubAdapter.Model model) {
         return model.paymentMethodDescriptorModels;
     }
 }

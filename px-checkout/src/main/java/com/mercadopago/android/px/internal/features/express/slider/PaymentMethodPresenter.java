@@ -25,7 +25,7 @@ class PaymentMethodPresenter extends BasePresenter<PaymentMethod.View> implement
 
     @Nullable
     private String getHighlightText() {
-        final int payerCostIndex = payerCostSelectionRepository.get(item.getId());
+        final int payerCostIndex = payerCostSelectionRepository.get(item.getId(), item.getType());
         final AmountConfiguration configuration = amountConfigurationRepository.getConfigurationFor(item.getId(), item.getType());
         final int installments = configuration == null || configuration.getPayerCosts().isEmpty() ?
             -1 : configuration.getCurrentPayerCost(false, payerCostIndex).getInstallments();

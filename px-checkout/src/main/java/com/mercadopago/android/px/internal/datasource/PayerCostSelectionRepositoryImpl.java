@@ -23,15 +23,16 @@ public class PayerCostSelectionRepositoryImpl implements PayerCostSelectionRepos
     }
 
     @Override
-    public int get(@NonNull final String paymentMethodId) {
-        final Integer selectedPayerCost = getSelectedPayerCosts().get(paymentMethodId);
+    public int get(@NonNull final String paymentMethodId, @NonNull final String paymentMethodType) {
+        final Integer selectedPayerCost = getSelectedPayerCosts().get(paymentMethodId+paymentMethodType);
         return selectedPayerCost != null ? selectedPayerCost : PayerCost.NO_SELECTED;
     }
 
     @Override
-    public void save(@NonNull final String paymentMethodId, final int selectedPayerCost) {
+    public void save(@NonNull final String paymentMethodId,
+        @NonNull final String paymentMethodType, final int selectedPayerCost) {
         final Map<String, Integer> selectedPayerCosts = getSelectedPayerCosts();
-        selectedPayerCosts.put(paymentMethodId, selectedPayerCost);
+        selectedPayerCosts.put(paymentMethodId+paymentMethodType, selectedPayerCost);
         sharedPreferences.edit().putString(PREF_SELECTED_PAYER_COSTS, JsonUtil.toJson(selectedPayerCosts))
             .apply();
     }

@@ -32,7 +32,6 @@ import com.mercadopago.android.px.utils.StubFailMpCall
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito.*
@@ -206,7 +205,7 @@ class ExpressPaymentPresenterTest {
         `when`(state.paymentMethodIndex).thenReturn(paymentMethodIndex)
         `when`(state.splitSelectionState).thenReturn(splitSelectionState)
         val payerCostIndex = 2
-        `when`(payerCostSelectionRepository.get(oneTapItem.customOptionId)).thenReturn(payerCostIndex)
+        `when`(payerCostSelectionRepository.get(oneTapItem.customOptionId, oneTapItem.getDefaultPaymentMethodType())).thenReturn(payerCostIndex)
 
         expressPaymentPresenter.restoreState(state)
         expressPaymentPresenter.onInstallmentSelectionCanceled()
@@ -262,7 +261,7 @@ class ExpressPaymentPresenterTest {
 
     @Test
     fun whenSliderOptionSelectedThenShowInstallmentsRow() {
-        `when`(payerCostSelectionRepository[anyString()]).thenReturn(PayerCost.NO_SELECTED)
+        `when`(payerCostSelectionRepository[anyString(), anyString()]).thenReturn(PayerCost.NO_SELECTED)
         val currentElementPosition = 0
 
         expressPaymentPresenter.onSliderOptionSelected(currentElementPosition)
@@ -285,7 +284,7 @@ class ExpressPaymentPresenterTest {
     }
 
     private fun mockPayerCosts(selectedPayerCostIndex: Int): List<PayerCost> {
-        `when`(payerCostSelectionRepository[anyString()]).thenReturn(selectedPayerCostIndex)
+        `when`(payerCostSelectionRepository[anyString(), anyString()]).thenReturn(selectedPayerCostIndex)
         val firstPayerCost = mock(PayerCost::class.java)
         val payerCostList = listOf(mock(PayerCost::class.java), firstPayerCost, mock(PayerCost::class.java))
         `when`(amountConfiguration.getAppliedPayerCost(false)).thenReturn(payerCostList)

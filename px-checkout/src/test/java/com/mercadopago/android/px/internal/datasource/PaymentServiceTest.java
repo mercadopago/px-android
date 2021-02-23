@@ -32,7 +32,6 @@ import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
-import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -43,6 +42,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.FromExpressMetadataToPaymentConfiguration;
 import com.mercadopago.android.px.model.internal.CheckoutResponse;
+import com.mercadopago.android.px.model.internal.OneTapItem;
 import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
@@ -97,7 +97,7 @@ public class PaymentServiceTest {
     @Mock private SplitSelectionState splitSelectionState;
     @Mock private PayerCostSelectionRepository payerCostSelectionRepository;
 
-    @Mock private ExpressMetadata node;
+    @Mock private OneTapItem node;
     @Mock private PayerCost payerCost;
     @Mock private PaymentMethod paymentMethod;
     @Mock private FileManager fileManager;
@@ -144,13 +144,13 @@ public class PaymentServiceTest {
         when(paymentMethodMapper.map((Pair<String, String>) any())).thenReturn(paymentMethod);
     }
 
-    private PaymentConfiguration mockPaymentConfiguration(@NonNull final ExpressMetadata expressMetadata,
+    private PaymentConfiguration mockPaymentConfiguration(@NonNull final OneTapItem oneTapItem,
         @Nullable final PayerCost payerCost) {
         final AmountConfiguration amountConfiguration = mock(AmountConfiguration.class);
         when(amountConfigurationRepository.getConfigurationFor(anyString(), anyString())).thenReturn(amountConfiguration);
         when(amountConfiguration.getCurrentPayerCost(anyBoolean(), anyInt())).thenReturn(payerCost);
         return new FromExpressMetadataToPaymentConfiguration(amountConfigurationRepository, splitSelectionState,
-            payerCostSelectionRepository, paymentMethodTypeSelectionRepository).map(expressMetadata);
+            payerCostSelectionRepository, paymentMethodTypeSelectionRepository).map(oneTapItem);
     }
 
     @Test
@@ -377,7 +377,6 @@ public class PaymentServiceTest {
     private Card creditCardPresetMock(final String cardId) {
         final Card card = getCardById(cardId);
         when(node.getPaymentMethodId()).thenReturn(PaymentMethods.ARGENTINA.AMEX);
-        when(node.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
         when(node.isCard()).thenReturn(true);
         when(node.getCustomOptionId()).thenReturn(cardId);
         when(fromPayerPaymentMethodIdToCardMapper.map(cardId)).thenReturn(card);

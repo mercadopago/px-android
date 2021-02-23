@@ -67,7 +67,7 @@ internal class RetryPaymentFragment : Fragment(), PaymentMethodFragment.Disabled
         paymentMethodDescriptor.visible()
         paymentMethodTitle.visible()
         if (!paymentMethodTitle.text.contains(":")) paymentMethodTitle.append(":") // FIXME
-        val model = MapperProvider.getPaymentMethodDescriptorMapper().map(methodData)
+        val model = MapperProvider.getPaymentMethodDescriptorMapper().map(methodData).getSelectedModel()
         model.formatForRemedy()
         payerCost?.let { model.setCurrentPayerCost(it.payerCostIndex) }
         paymentMethodDescriptor.configureExperiment(BadgeVariant().default)

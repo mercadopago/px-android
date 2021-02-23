@@ -52,9 +52,9 @@ import com.mercadopago.android.px.internal.util.CardFormWrapper;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
-import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.experiments.ExperimentHelper;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentMethodDescriptorModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.SummaryModel;
 import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
@@ -182,7 +182,7 @@ import java.util.List;
                 customTextsRepository, amountDescriptorMapper, paymentMethodTypeSelectionRepository)
                 .map(expressMetadataList);
 
-        final List<PaymentMethodDescriptorView.Model> paymentModels =
+        final List<PaymentMethodDescriptorModel> paymentModels =
             paymentMethodDescriptorMapper.map(expressMetadataList);
 
         final List<SplitPaymentHeaderAdapter.Model> splitHeaderModels =
@@ -242,7 +242,7 @@ import java.util.List;
         setCurrentViewTracker(oneTapViewTracker);
     }
 
-    private OneTapItem getCurrentExpressMetadata() {
+    private OneTapItem getCurrentOneTapItem() {
         return expressMetadataRepository.getValue().get(getState().getPaymentMethodIndex());
     }
 
@@ -258,7 +258,11 @@ import java.util.List;
     }
 
     private void updateElementPosition(final int selectedPayerCost) {
-        payerCostSelectionRepository.save(getCurrentExpressMetadata().getCustomOptionId(), selectedPayerCost);
+        final String customOptionId = getCurrentOneTapItem().getCustomOptionId();
+        payerCostSelectionRepository.save(
+            customOptionId,
+            paymentMethodTypeSelectionRepository.get(customOptionId),
+            selectedPayerCost);
         updateElements();
     }
 
@@ -266,7 +270,7 @@ import java.util.List;
     public void onInstallmentsRowPressed() {
         updateInstallments();
         getView().animateInstallmentsList();
-        final OneTapItem oneTapItem = getCurrentExpressMetadata();
+        final OneTapItem oneTapItem = getCurrentOneTapItem();
         final String customOptionId = oneTapItem.getCustomOptionId();
         final AmountConfiguration amountConfiguration =
             amountConfigurationRepository.getConfigurationFor(
@@ -277,16 +281,17 @@ import java.util.List;
 
     @Override
     public void updateInstallments() {
-        final OneTapItem oneTapItem = getCurrentExpressMetadata();
+        final OneTapItem oneTapItem = getCurrentOneTapItem();
         final String customOptionId = oneTapItem.getCustomOptionId();
+        final String paymentMethodType = paymentMethodTypeSelectionRepository.get(customOptionId);
         final AmountConfiguration amountConfiguration =
             amountConfigurationRepository.getConfigurationFor(
                 customOptionId,
-                paymentMethodTypeSelectionRepository.get(customOptionId));
+                paymentMethodType);
         final List<PayerCost> payerCostList = getCurrentPayerCosts();
         final int selectedIndex = amountConfiguration.getCurrentPayerCostIndex(
             getState().getSplitSelectionState().userWantsToSplit(),
-            payerCostSelectionRepository.get(customOptionId));
+            payerCostSelectionRepository.get(customOptionId, paymentMethodType));
         final List<InstallmentRowHolder.Model> models =
             new InstallmentViewModelMapper(paymentSettingRepository.getCurrency(), oneTapItem.getBenefits(),
                 getVariants()).map(payerCostList);
@@ -294,7 +299,7 @@ import java.util.List;
     }
 
     private List<PayerCost> getCurrentPayerCosts() {
-        final OneTapItem oneTapItem = getCurrentExpressMetadata();
+        final OneTapItem oneTapItem = getCurrentOneTapItem();
         final String customOptionId = oneTapItem.getCustomOptionId();
 
         final AmountConfiguration amountConfiguration =
@@ -321,12 +326,16 @@ import java.util.List;
     public void onSliderOptionSelected(final int paymentMethodIndex) {
         getState().setPaymentMethodIndex(paymentMethodIndex);
         track(new SwipeOneTapEventTracker());
-        updateElementPosition(payerCostSelectionRepository.get(getCurrentExpressMetadata().getCustomOptionId()));
+        final String customOptionId = getCurrentOneTapItem().getCustomOptionId();
+        final String paymentMethodType = paymentMethodTypeSelectionRepository.get(customOptionId);
+        updateElementPosition(payerCostSelectionRepository.get(customOptionId, paymentMethodType));
     }
 
     private void updateElements() {
+        final String customOptionId = getCurrentOneTapItem().getCustomOptionId();
+        final String paymentMethodType = paymentMethodTypeSelectionRepository.get(customOptionId);
         getView().updateViewForPosition(getState().getPaymentMethodIndex(),
-            payerCostSelectionRepository.get(getCurrentExpressMetadata().getCustomOptionId()),
+            payerCostSelectionRepository.get(customOptionId, paymentMethodType),
             getState().getSplitSelectionState());
     }
 
@@ -337,7 +346,7 @@ import java.util.List;
      */
     @Override
     public void onPayerCostSelected(final PayerCost payerCostSelected) {
-        final String customOptionId = getCurrentExpressMetadata().getCustomOptionId();
+        final String customOptionId = getCurrentOneTapItem().getCustomOptionId();
         final int selected = amountConfigurationRepository.getConfigurationFor(
             customOptionId,
             paymentMethodTypeSelectionRepository.get(customOptionId))
@@ -356,20 +365,20 @@ import java.util.List;
 
     @Override
     public void onPaymentMethodTypeChanged(@NonNull final String paymentMethodType) {
-        final String customOptionId = getCurrentExpressMetadata().getCustomOptionId();
+        final String customOptionId = getCurrentOneTapItem().getCustomOptionId();
 
         paymentMethodTypeSelectionRepository.save(customOptionId, paymentMethodType);
         getView().updateViewForPaymentMethodType(
             paymentMethodType,
-            payerCostSelectionRepository.get(customOptionId),
+            payerCostSelectionRepository.get(customOptionId, paymentMethodType),
             getState().getSplitSelectionState()
         );
     }
 
     public void onDisabledDescriptorViewClick() {
         getView().showDisabledPaymentMethodDetailDialog(
-            disabledPaymentMethodRepository.getDisabledPaymentMethod(getCurrentExpressMetadata().getCustomOptionId()),
-            getCurrentExpressMetadata().getStatus());
+            disabledPaymentMethodRepository.getDisabledPaymentMethod(getCurrentOneTapItem().getCustomOptionId()),
+            getCurrentOneTapItem().getStatus());
     }
 
     @Override
@@ -451,7 +460,7 @@ import java.util.List;
     }
 
     private boolean handleBehaviour(@CheckoutBehaviour.Type @NonNull final String behaviourType) {
-        final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+        final ExpressMetadata expressMetadata = getCurrentOneTapItem();
 
         final CheckoutBehaviour behaviour = expressMetadata.getBehaviour(behaviourType);
         final Modal modal = behaviour != null && behaviour.getModal() != null ?
@@ -479,13 +488,13 @@ import java.util.List;
     }
 
     private void requireCurrentConfiguration(@NonNull PayButton.OnReadyForPaymentCallback callback) {
-        final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+        final OneTapItem oneTapItem = getCurrentOneTapItem();
 
         final PaymentConfiguration configuration = new FromExpressMetadataToPaymentConfiguration(
             amountConfigurationRepository,
             getState().getSplitSelectionState(),
             payerCostSelectionRepository,
-            paymentMethodTypeSelectionRepository).map(expressMetadata);
+            paymentMethodTypeSelectionRepository).map(oneTapItem);
 
         callback.call(configuration);
     }
@@ -514,7 +523,7 @@ import java.util.List;
             new ConfirmData(ConfirmData.ReviewType.ONE_TAP, getState().getPaymentMethodIndex(),
                 new FromSelectedExpressMetadataToAvailableMethods(escManagerBehaviour.getESCCardIds(),
                     configuration.getPayerCost(), configuration.getSplitPayment())
-                    .map(getCurrentExpressMetadata()));
+                    .map(getCurrentOneTapItem()));
         final Experiment experiment = experimentsRepository.getExperiment(KnownExperiment.INSTALLMENTS_HIGHLIGHT);
         if (getCurrentPayerCosts().size() > 1 && experiment != null) {
             experiments.add(experiment);
@@ -523,7 +532,7 @@ import java.util.List;
     }
 
     private boolean overridePayButtonStateChange(@NonNull final PayButton.State uiState) {
-        final ExpressMetadata currentExpressMetadata = getCurrentExpressMetadata();
+        final ExpressMetadata currentExpressMetadata = getCurrentOneTapItem();
         return uiState == PayButton.State.ENABLE && (currentExpressMetadata.isNewCard() ||
             currentExpressMetadata.isOfflineMethods() || disabledPaymentMethodRepository.hasPaymentMethodId(
             currentExpressMetadata.getCustomOptionId()));

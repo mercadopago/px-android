@@ -18,14 +18,14 @@ import retrofit2.http.Query;
 public interface CheckoutService {
 
     String CHECKOUT_VERSION = "v2";
-    String ENVIRONMENT = BuildConfig.API_ENVIRONMENT_NEW;
+    String ENVIRONMENT = "https://run.mocky.io/v3/e455ce55-1dea-4878-88ef-4bdacbe1cf78/";//BuildConfig.API_ENVIRONMENT_NEW;
 
-    @POST("https://run.mocky.io/v3/73533dde-2b97-4649-a2ea-88688d120c03/" + ENVIRONMENT + "/px_mobile/" + CHECKOUT_VERSION + "/checkout")
+    @POST(ENVIRONMENT + "/px_mobile/" + CHECKOUT_VERSION + "/checkout")
     MPCall<CheckoutResponse> checkout(
         @Query("access_token") String privateKey,
         @Body Map<String, Object> body);
 
-    @POST("https://run.mocky.io/v3/73533dde-2b97-4649-a2ea-88688d120c03/" + ENVIRONMENT + "/px_mobile/" + CHECKOUT_VERSION + "/checkout/{preference_id}")
+    @POST(ENVIRONMENT + "/px_mobile/" + CHECKOUT_VERSION + "/checkout/{preference_id}")
     MPCall<CheckoutResponse> checkout(
         @Path(value = "preference_id", encoded = true) String preferenceId,
         @Query("access_token") String privateKey,

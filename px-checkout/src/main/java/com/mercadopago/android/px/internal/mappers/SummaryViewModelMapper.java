@@ -83,6 +83,7 @@ public class SummaryViewModelMapper extends CacheableMapper<OneTapItem, SummaryM
     @NonNull
     private SummaryModel createModel(@NonNull final OneTapItem oneTapItem) {
         final String customOptionId = oneTapItem.getCustomOptionId();
+        final String defaultPaymentMethodType = paymentMethodTypeSelectionRepository.get(customOptionId);
         final List<Application> applications = oneTapItem.getApplications();
         final Map<String, SummaryView.Model> map = new HashMap<>();
 
@@ -96,11 +97,11 @@ public class SummaryViewModelMapper extends CacheableMapper<OneTapItem, SummaryM
         } else {
             summaryViewModelToMap(
                 customOptionId,
-                oneTapItem.getDefaultPaymentMethodType(),
+                defaultPaymentMethodType,
                 map);
         }
 
-        return new SummaryModel(paymentMethodTypeSelectionRepository.get(customOptionId), map);
+        return new SummaryModel(defaultPaymentMethodType, map);
     }
 
     private void summaryViewModelToMap(

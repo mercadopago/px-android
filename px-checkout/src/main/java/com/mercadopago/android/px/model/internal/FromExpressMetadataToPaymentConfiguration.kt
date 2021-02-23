@@ -5,7 +5,6 @@ import com.mercadopago.android.px.internal.repository.PayerCostSelectionReposito
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState
 import com.mercadopago.android.px.internal.mappers.Mapper
 import com.mercadopago.android.px.internal.repository.PaymentMethodTypeSelectionRepository
-import com.mercadopago.android.px.model.ExpressMetadata
 import com.mercadopago.android.px.model.PayerCost
 
 internal class FromExpressMetadataToPaymentConfiguration(
@@ -13,23 +12,29 @@ internal class FromExpressMetadataToPaymentConfiguration(
     private val splitSelectionState: SplitSelectionState,
     private val payerCostSelectionRepository: PayerCostSelectionRepository,
     private val paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository
-) : Mapper<ExpressMetadata, PaymentConfiguration>() {
+) : Mapper<OneTapItem, PaymentConfiguration>() {
 
-    override fun map(expressMetadata: ExpressMetadata): PaymentConfiguration {
+    override fun map(oneTapItem: OneTapItem): PaymentConfiguration {
         var payerCost: PayerCost? = null
 
-        val customOptionId = expressMetadata.customOptionId
+        val customOptionId = oneTapItem.customOptionId
+        val paymentMethodSelected = paymentMethodTypeSelectionRepository.get(customOptionId);
         val amountConfiguration = amountConfigurationRepository.getConfigurationFor(
             customOptionId,
-            paymentMethodTypeSelectionRepository.get(customOptionId))
+            paymentMethodSelected)
         val splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration!!.allowSplit()
 
-        if (expressMetadata.isCard || expressMetadata.isConsumerCredits) {
+        if (oneTapItem.isCard || oneTapItem.isConsumerCredits) {
             payerCost = amountConfiguration!!.getCurrentPayerCost(splitSelectionState.userWantsToSplit(),
-                payerCostSelectionRepository.get(customOptionId))
+                payerCostSelectionRepository.get(customOptionId, paymentMethodSelected))
         }
 
-        return PaymentConfiguration(expressMetadata.paymentMethodId, expressMetadata.paymentTypeId, customOptionId, expressMetadata.isCard,
-            splitPayment, payerCost)
+        return PaymentConfiguration(
+            oneTapItem.paymentMethodId,
+            paymentMethodSelected,
+            customOptionId,
+            oneTapItem.isCard,
+            splitPayment,
+            payerCost)
     }
 }
