@@ -74,8 +74,8 @@ public class PaymentService implements PaymentRepository {
     @Nullable private PaymentWrapper payment;
     @NonNull private final File paymentFile;
     @NonNull private final FromPayerPaymentMethodIdToCardMapper fromPayerPaymentMethodIdToCardMapper;
-    private final PaymentMethodMapper paymentMethodMapper;
-    private final PaymentMethodRepository paymentMethodRepository;
+    @NonNull private final PaymentMethodMapper paymentMethodMapper;
+    @NonNull private final PaymentMethodRepository paymentMethodRepository;
     @NonNull private final PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository;
 
     public PaymentService(@NonNull final UserSelectionRepository userSelectionRepository,
