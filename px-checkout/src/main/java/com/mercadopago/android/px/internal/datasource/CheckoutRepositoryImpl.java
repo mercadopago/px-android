@@ -108,7 +108,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
         experimentsRepository.configure(checkoutResponse.getExperiments());
         payerPaymentMethodRepository.configure(checkoutResponse.getPayerPaymentMethods());
         expressMetadataRepository.configure(checkoutResponse.getOneTapItems());
-        paymentMethodTypeSelectionRepository.configure(getPaymentMethodTypes());
+        paymentMethodTypeSelectionRepository.configure(checkoutResponse.getOneTapItems());
         paymentMethodRepository.configure(checkoutResponse.getAvailablePaymentMethods());
         modalRepository.configure(checkoutResponse.getModals());
         payerComplianceRepository.configure(checkoutResponse.getPayerCompliance());
@@ -119,16 +119,6 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
             new ExpressMetadataToDisabledIdMapper().map(checkoutResponse.getOneTapItems()));
 
         tracker.setExperiments(experimentsRepository.getExperiments());
-    }
-
-    private HashMap<String, String> getPaymentMethodTypes() {
-        final HashMap<String, String> paymentMethodTypeMap = new HashMap<>();
-
-        for (final OneTapItem oneTapItem : expressMetadataRepository.getValue()) {
-            paymentMethodTypeMap.put(oneTapItem.getCustomOptionId(), oneTapItem.getDefaultPaymentMethodType());
-        }
-
-        return paymentMethodTypeMap;
     }
 
     @Override
