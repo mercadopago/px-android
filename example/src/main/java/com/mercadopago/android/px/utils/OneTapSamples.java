@@ -432,7 +432,7 @@ public final class OneTapSamples {
         final Collection<String> excludedPaymentTypes = new ArrayList<>();
         excludedPaymentTypes.add("account_money");
         final CheckoutPreference checkoutPreferenceWithPayerEmail =
-            getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 240, 1);
+            getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120, 1);
         return new MercadoPagoCheckout.Builder(Credentials.SAVED_CARD_MERCHANT_PUBLIC_KEY_1, checkoutPreferenceWithPayerEmail,
             PaymentConfigurationUtils.create(samplePaymentProcessor))
             .setPrivateKey(Credentials.SAVED_CARD_PAYER_PRIVATE_KEY_1)
@@ -495,7 +495,7 @@ public final class OneTapSamples {
             getCheckoutPreferenceWithPayerEmailInBrazil(excludedPaymentTypes, 120);
 
         final ArrayList<PaymentTypeChargeRule> chargeRules = new ArrayList<>();
-        chargeRules.add(new PaymentTypeChargeRule(PaymentTypes.DEBIT_CARD, BigDecimal.TEN));
+        chargeRules.add(new PaymentTypeChargeRule(PaymentTypes.DIGITAL_CURRENCY, BigDecimal.TEN));
         chargeRules.add(PaymentTypeChargeRule.createChargeFreeRule(PaymentTypes.ACCOUNT_MONEY, "account money"));
 
         final PaymentConfiguration paymentConfiguration = new PaymentConfiguration

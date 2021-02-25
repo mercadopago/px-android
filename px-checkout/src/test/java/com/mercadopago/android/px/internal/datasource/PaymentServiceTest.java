@@ -129,8 +129,7 @@ public class PaymentServiceTest {
             fileManager,
             fromPayerPaymentMethodToCardMapper,
             paymentMethodMapper,
-            paymentMethodRepository,
-            applicationSelectionRepository
+            paymentMethodRepository
         );
 
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(mock(CheckoutPreference.class));

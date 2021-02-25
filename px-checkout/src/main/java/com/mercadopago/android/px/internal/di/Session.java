@@ -291,8 +291,8 @@ public final class Session extends ApplicationModule {
                 getFileManager(),
                 MapperProvider.INSTANCE.getFromPayerPaymentMethodToCardMapper(),
                 MapperProvider.INSTANCE.getPaymentMethodMapper(),
-                getPaymentMethodRepository(),
-                getConfigurationModule().getApplicationSelectionRepository());
+                getPaymentMethodRepository()
+            );
         }
 
         return paymentRepository;
