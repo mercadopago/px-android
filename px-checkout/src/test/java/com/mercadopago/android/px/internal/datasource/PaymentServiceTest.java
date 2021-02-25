@@ -378,6 +378,7 @@ public class PaymentServiceTest {
     private Card creditCardPresetMock(final String cardId) {
         final Card card = getCardById(cardId);
         when(node.getPaymentMethodId()).thenReturn(PaymentMethods.ARGENTINA.AMEX);
+        when(node.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
         when(node.isCard()).thenReturn(true);
         when(node.getCustomOptionId()).thenReturn(cardId);
         when(fromPayerPaymentMethodToCardMapper
