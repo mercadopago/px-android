@@ -258,7 +258,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
                     .addAdditionalParams(
                         JsonUtil.getStringMapFromJson(sharedPreferences.getString(PREF_DISCOUNT_PARAMS, "")))
                     .setLabels(sharedPreferences.getStringSet(PREF_LABELS, Collections.emptySet())).build())
-                .setCustomStringConfiguration(JsonUtil.getGson().fromJson(
+                .setCustomStringConfiguration(JsonUtil.fromJson(
                     sharedPreferences.getString(PREF_CUSTOM_STRINGS, null), CustomStringConfiguration.class))
                 .build();
         }

@@ -95,9 +95,9 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class ExpressPaymentFragment extends BaseFragment implements ExpressPayment.View, ViewPager.OnPageChangeListener,
-    SplitPaymentHeaderAdapter.SplitListener, PaymentMethodFragment.DisabledDetailDialogLauncher, PaymentMethodFragment.CardActionListener,
+    SplitPaymentHeaderAdapter.SplitListener, PaymentMethodFragment.DisabledDetailDialogLauncher,
     OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener, TitlePagerAdapter.InstallmentChanged,
-    PayButton.Handler, GenericDialog.Listener, BackHandler {
+    PayButton.Handler, GenericDialog.Listener, BackHandler, PaymentMethodFragment.PaymentMethodPagerListener {
 
     private static final String TAG = ExpressPaymentFragment.class.getSimpleName();
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
@@ -183,6 +183,11 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
             presenter.onBack();
         }
         return isExploding || offlineMethodsFragment.handleBack();
+    }
+
+    @Override
+    public void onApplicationChanged(@NonNull final String paymentTypeId) {
+        presenter.onApplicationChanged(paymentTypeId);
     }
 
     public interface CallBack {
@@ -365,6 +370,7 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
         return new ExpressPaymentPresenter(configurationModule.getPaymentSettings(),
             configurationModule.getDisabledPaymentMethodRepository(),
             configurationModule.getPayerCostSelectionRepository(),
+            configurationModule.getApplicationSelectionRepository(),
             session.getDiscountRepository(),
             session.getAmountRepository(),
             session.getCheckoutRepository(),
@@ -379,9 +385,8 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
             configurationModule.getCustomTextsRepository(),
             MapperProvider.INSTANCE.getAmountDescriptorMapper(),
             session.getTracker(),
-            session.getExpressMetadataRepository(),
+            session.getOneTapItemRepository(),
             session.getPayerPaymentMethodRepository(),
-            session.getPaymentMethodTypeSelectionRepository(),
             session.getModalRepository());
     }
 
@@ -628,11 +633,6 @@ public class ExpressPaymentFragment extends BaseFragment implements ExpressPayme
     @Override
     public int getRequestCode() {
         return REQ_CODE_DISABLE_DIALOG;
-    }
-
-    @Override
-    public void onCardPaymentMethodChange(@NonNull final String paymentMethodType) {
-        presenter.onPaymentMethodTypeChanged(paymentMethodType);
     }
 
     @Override

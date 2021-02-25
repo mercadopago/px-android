@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.viewmodel.mappers
+package com.mercadopago.android.px.internal.mappers
 
 import com.meli.android.carddrawer.model.State
 import com.meli.android.carddrawer.model.SwitchModel

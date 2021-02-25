@@ -1,15 +1,15 @@
 package com.mercadopago.android.px.internal.di
 
-import com.mercadopago.android.px.internal.datasource.mapper.FromPayerPaymentMethodIdToCardMapper
+import com.mercadopago.android.px.internal.datasource.mapper.FromPayerPaymentMethodToCardMapper
 import com.mercadopago.android.px.internal.features.checkout.PostPaymentUrlsMapper
 import com.mercadopago.android.px.internal.features.payment_congrats.model.PaymentCongratsModelMapper
 import com.mercadopago.android.px.internal.features.payment_result.remedies.AlternativePayerPaymentMethodsMapper
 import com.mercadopago.android.px.internal.mappers.AmountDescriptorMapper
-import com.mercadopago.android.px.internal.viewmodel.mappers.CardDrawerCustomViewModelMapper
+import com.mercadopago.android.px.internal.mappers.CardDrawerCustomViewModelMapper
 import com.mercadopago.android.px.internal.mappers.CardUiMapper
 import com.mercadopago.android.px.internal.mappers.PaymentMethodDescriptorMapper
-import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper
 import com.mercadopago.android.px.internal.mappers.PaymentMethodMapper
+import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper
 
 internal object MapperProvider {
     fun getPaymentMethodDrawableItemMapper(): PaymentMethodDrawableItemMapper {
@@ -21,7 +21,7 @@ internal object MapperProvider {
             CardDrawerCustomViewModelMapper,
             session.payerPaymentMethodRepository,
             session.modalRepository,
-            session.paymentMethodTypeSelectionRepository
+            session.configurationModule.applicationSelectionRepository
         )
     }
 
@@ -32,7 +32,7 @@ internal object MapperProvider {
             session.configurationModule.paymentSettings,
             session.amountConfigurationRepository,
             session.configurationModule.disabledPaymentMethodRepository,
-            session.paymentMethodTypeSelectionRepository,
+            session.configurationModule.applicationSelectionRepository,
             session.amountRepository
         )
     }
@@ -60,8 +60,8 @@ internal object MapperProvider {
         )
     }
 
-    fun getFromPayerPaymentMethodIdToCardMapper(): FromPayerPaymentMethodIdToCardMapper {
-        return FromPayerPaymentMethodIdToCardMapper(
+    fun getFromPayerPaymentMethodToCardMapper(): FromPayerPaymentMethodToCardMapper {
+        return FromPayerPaymentMethodToCardMapper(
             Session.getInstance().payerPaymentMethodRepository,
             Session.getInstance().paymentMethodRepository
         )

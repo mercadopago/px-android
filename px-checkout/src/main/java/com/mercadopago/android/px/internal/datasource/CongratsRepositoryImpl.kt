@@ -28,7 +28,7 @@ internal class CongratsRepositoryImpl(
     private val disabledPaymentMethodRepository: DisabledPaymentMethodRepository,
     private val payerComplianceRepository: PayerComplianceRepository,
     private val escManagerBehaviour: ESCManagerBehaviour,
-    private val expressMetadataRepository: ExpressMetadataRepository,
+    private val oneTapItemRepository: OneTapItemRepository,
     private val alternativePayerPaymentMethodsMapper: AlternativePayerPaymentMethodsMapper) : CongratsRepository {
 
     private val paymentRewardCache = HashMap<String, CongratsResponse>()
@@ -75,7 +75,7 @@ internal class CongratsRepositoryImpl(
 
     private suspend fun getRemedies(payment: IPaymentDescriptor, paymentData: PaymentData) =
         try {
-            val hasOneTap = expressMetadataRepository.value.isNotEmpty()
+            val hasOneTap = oneTapItemRepository.value.isNotEmpty()
             val usedPayerPaymentMethodId = paymentData.token?.cardId ?: paymentData.paymentMethod.id
             val escCardIds = escManagerBehaviour.escCardIds
             val body = RemediesBodyMapper(
@@ -83,7 +83,7 @@ internal class CongratsRepositoryImpl(
                 amountRepository,
                 usedPayerPaymentMethodId,
                 escCardIds.contains(usedPayerPaymentMethodId),
-                alternativePayerPaymentMethodsMapper.map(expressMetadataRepository.value).filter {
+                alternativePayerPaymentMethodsMapper.map(oneTapItemRepository.value).filter {
                     it.customOptionId != usedPayerPaymentMethodId ||
                         !disabledPaymentMethodRepository.hasPaymentMethodId(it.customOptionId)
                 }

@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.datasource;
 
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -10,9 +9,7 @@ import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
-import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.mercadopago.android.px.internal.util.TextUtil.isNotEmpty;
@@ -52,11 +49,8 @@ public final class DisabledPaymentMethodService implements DisabledPaymentMethod
         if (disabledPaymentMethods == null) {
             final String disabledPaymentMethodsJson =
                 sharedPreferences.getString(PREF_DISABLED_PAYMENT_METHODS, null);
-            final Type type = new TypeToken<HashMap<String, DisabledPaymentMethod>>() {
-            }.getType();
             disabledPaymentMethods =
-                disabledPaymentMethodsJson != null ? JsonUtil.fromJson(disabledPaymentMethodsJson, type)
-                    : new HashMap<>();
+                JsonUtil.getCustomMapFromJson(disabledPaymentMethodsJson, String.class, DisabledPaymentMethod.class);
         }
         return disabledPaymentMethods;
     }

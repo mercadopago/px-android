@@ -77,6 +77,7 @@
             android:paddingStart="@dimen/px_m_margin"
             android:paddingEnd="@dimen/px_m_margin"
             android:layout_marginBottom="@dimen/px_s_margin"
+            android:importantForAccessibility="no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintVertical_bias="1" />

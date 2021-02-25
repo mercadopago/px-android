@@ -19,7 +19,7 @@ class CardUiMapperTest {
 
         `when`(businessCardDisplayInfo.paymentMethodImage).thenReturn("paymentMethodImage")
         `when`(businessCardDisplayInfo.paymentMethodImageUrl).thenReturn("paymentMethodImageUrl")
-        `when`(businessCardDisplayInfo.cardPattern).thenReturn(intArrayOf(1,2,3,4))
+        `when`(businessCardDisplayInfo.cardPattern).thenReturn(intArrayOf(1, 2, 3, 4))
         `when`(businessCardDisplayInfo.cardPatternMask).thenReturn("*****")
         `when`(businessCardDisplayInfo.cardholderName).thenReturn("cardholderName")
         `when`(businessCardDisplayInfo.color).thenReturn("color")
@@ -73,21 +73,23 @@ class CardUiMapperTest {
             }
         }""".trimIndent(), CardDisplayInfo::class.java)
 
-        val expectedResult = CardUiConfiguration(
-            cardDisplayInfo.cardholderName,
-            cardDisplayInfo.expiration,
-            cardDisplayInfo.getCardPattern(),
-            cardDisplayInfo.issuerImageUrl,
-            cardDisplayInfo.paymentMethodImageUrl,
-            cardDisplayInfo.fontType,
-            cardDisplayInfo.cardPattern,
-            cardDisplayInfo.color,
-            cardDisplayInfo.fontColor,
-            cardDisplayInfo.securityCode.cardLocation,
-            cardDisplayInfo.securityCode.length,
-            null,
-            null
-        )
+        val expectedResult = with(cardDisplayInfo!!) {
+            CardUiConfiguration(
+                cardholderName,
+                expiration,
+                getCardPattern(),
+                issuerImageUrl,
+                paymentMethodImageUrl,
+                fontType,
+                cardPattern,
+                color,
+                fontColor,
+                securityCode.cardLocation,
+                securityCode.length,
+                null,
+                null
+            )
+        }
 
         val actualResult = CardUiMapper.map(cardDisplayInfo)
 

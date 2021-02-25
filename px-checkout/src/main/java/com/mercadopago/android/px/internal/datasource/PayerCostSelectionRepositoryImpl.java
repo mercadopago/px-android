@@ -3,12 +3,9 @@ package com.mercadopago.android.px.internal.datasource;
 import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.PayerCost;
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
 
 public class PayerCostSelectionRepositoryImpl implements PayerCostSelectionRepository {
@@ -46,10 +43,7 @@ public class PayerCostSelectionRepositoryImpl implements PayerCostSelectionRepos
     private Map<String, Integer> getSelectedPayerCosts() {
         if (selectedPayerCosts == null) {
             final String selectedPayerCostsJson = sharedPreferences.getString(PREF_SELECTED_PAYER_COSTS, null);
-            final Type type = new TypeToken<HashMap<String, Integer>>() {
-            }.getType();
-            selectedPayerCosts = selectedPayerCostsJson != null ?
-                JsonUtil.fromJson(selectedPayerCostsJson, type) : new HashMap<>();
+            selectedPayerCosts = JsonUtil.getCustomMapFromJson(selectedPayerCostsJson, String.class, Integer.class);
         }
         return selectedPayerCosts;
     }

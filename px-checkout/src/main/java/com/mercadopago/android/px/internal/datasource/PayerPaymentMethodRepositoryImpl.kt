@@ -14,6 +14,14 @@ internal class PayerPaymentMethodRepositoryImpl(private val fileManager: FileMan
 
     override fun readFromStorage() = fileManager.readAnyList(file, CustomSearchItem::class.java)
 
+    override fun get(key: PayerPaymentMethodRepository.Key): CustomSearchItem? {
+        return value.firstOrNull {
+            it.id == key.payerPaymentMethodId
+                && it.paymentMethodId == key.paymentMethodId
+                && it.type == key.paymentTypeId
+        }
+    }
+
     override fun getIdsWithSplitAllowed(): Set<String> {
         return mutableSetOf<String>().also { map ->
             value.map { payerPaymentMethod ->

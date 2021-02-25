@@ -112,8 +112,6 @@ public interface ExpressPayment {
 
         void onPayerCostSelected(final PayerCost payerCostSelected);
 
-        void onPaymentMethodTypeChanged(@NonNull final String paymentMethodType);
-
         void onSplitChanged(boolean isChecked);
 
         void onHeaderClicked();
@@ -133,6 +131,8 @@ public interface ExpressPayment {
         void onCardAdded(@NonNull final String cardId, @NonNull final LifecycleListener.Callback callback);
 
         void onCardFormResult();
+
+        void onApplicationChanged(@NonNull final String paymentTypeId);
     }
 
     enum NavigationState {

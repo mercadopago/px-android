@@ -13,6 +13,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.mercadolibre.android.picassodiskcache.PicassoDiskLoader;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
@@ -90,17 +93,15 @@ public class AmountDescriptorView extends ConstraintLayout {
             updateLeftLabel(model);
             updateRightLabel(model);
             updateDrawable(model.detailDrawable, model.detailDrawableColor);
+            brief.setVisibility(View.GONE);
         }
 
-        // For accessibility
-        if (model.listener != null) {
-            setOnClickListener(model.listener);
-        }
+        setOnClickListener(model.listener);
 
         executeIfAccessibilityTalkBackEnable(getContext(), () -> {
             final SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
             spannableStringBuilder.append(descriptor.getText()).append(TextUtil.SPACE);
-            final String textAmount = model.right.get(getContext()).toString();
+            final String textAmount = getTextAmount(model);
             final String[] listAmount = textAmount.split(TextUtil.SPACE);
             if (listAmount.length > 0) {
                 spannableStringBuilder
@@ -110,6 +111,19 @@ public class AmountDescriptorView extends ConstraintLayout {
             setContentDescription(spannableStringBuilder.toString());
             return null;
         });
+    }
+
+    @NonNull
+    private String getTextAmount(@NonNull final AmountDescriptorView.Model model) {
+        final ILocalizedCharSequence amount = model.right;
+        final AmountDescriptor amountDescriptor = model.amountDescriptor;
+        if (amount != null) {
+            return amount.get(getContext()).toString();
+        } else if (amountDescriptor != null) {
+            return amountDescriptor.getAmount().getMessage();
+        } else {
+            return TextUtil.EMPTY;
+        }
     }
 
     private void updateAmountDescriptor(@NonNull final AmountDescriptor amountDescriptor,

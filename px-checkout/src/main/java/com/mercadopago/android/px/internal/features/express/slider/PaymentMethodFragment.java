@@ -1,17 +1,21 @@
 package com.mercadopago.android.px.internal.features.express.slider;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.cardview.widget.CardView;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import com.meli.android.carddrawer.model.CardDrawerSwitchView;
+import com.meli.android.carddrawer.model.CardDrawerView;
+import com.meli.android.carddrawer.model.SwitchModel;
 import com.meli.android.carddrawer.model.CardDrawerSwitchView;
 import com.meli.android.carddrawer.model.CardDrawerView;
 import com.meli.android.carddrawer.model.SwitchModel;
@@ -34,13 +38,24 @@ import java.util.Arrays;
 import static com.mercadopago.android.px.internal.util.AccessibilityUtilsKt.executeIfAccessibilityTalkBackEnable;
 
 public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
-    extends BasePagerFragment<PaymentMethodPresenter, T> implements PaymentMethod.View, Focusable, GenericDialog.Listener {
+    extends BasePagerFragment<PaymentMethodPresenter, T>
+    implements PaymentMethod.View, Focusable, GenericDialog.Listener {
 
     private CardView card;
     private BottomSlideAnimationSet animation;
     private boolean focused;
     private MPTextView bottomDescription;
     private Handler handler;
+    private PaymentMethodPagerListener listener = paymentTypeId -> {
+    };
+
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        if (getParentFragment() instanceof PaymentMethodPagerListener) {
+            listener = (PaymentMethodPagerListener) getParentFragment();
+        }
+    }
 
     @Override
     protected PaymentMethodPresenter createPresenter() {
@@ -93,7 +108,7 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
             onFocusIn();
         }
         final CardDrawerView cardDrawerView = view.findViewById(R.id.card);
-        if(cardDrawerView != null) {
+        if (cardDrawerView != null) {
             setUpCardDrawerView(cardDrawerView);
         }
     }
@@ -108,9 +123,8 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         if (switchModel != null) {
             final CardDrawerSwitchView cardDrawerSwitch = new CardDrawerSwitchView(getContext());
             cardDrawerSwitch.setSwitchModel(switchModel);
-            cardDrawerSwitch.setSwitchListener(paymentMethodId ->
-                ((CardActionListener) getParentFragment()).onCardPaymentMethodChange(paymentMethodId));
             cardDrawerView.setCustomView(cardDrawerSwitch);
+            cardDrawerSwitch.setSwitchListener(paymentMethodId -> listener.onApplicationChanged(paymentMethodId));
         }
     }
 
@@ -270,7 +284,7 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         }
     }
 
-    public interface CardActionListener {
-        void onCardPaymentMethodChange(@NonNull final String paymentMethodType);
+    public interface PaymentMethodPagerListener {
+        void onApplicationChanged(@NonNull final String paymentTypeId);
     }
 }
