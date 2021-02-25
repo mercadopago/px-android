@@ -43,7 +43,7 @@ class BusinessSecurityCodeDisplayDataMapperTest {
         `when`(securityCodeDisplayData.securityCodeLength).thenReturn(3)
         `when`(securityCodeDisplayData.cardDisplayInfo).thenReturn(cardDisplayInfo)
 
-        val businessCardDisplayInfo = with(cardDisplayInfo) {
+        val businessCardDisplayInfo = with(cardDisplayInfo!!) {
             BusinessCardDisplayInfo(
                 cardholderName,
                 expiration,

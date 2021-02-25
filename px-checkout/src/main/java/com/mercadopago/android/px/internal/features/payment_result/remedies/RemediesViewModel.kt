@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.mercadopago.android.px.addons.ESCManagerBehaviour
 import com.mercadopago.android.px.internal.base.BaseState
 import com.mercadopago.android.px.internal.base.BaseViewModelWithState
-import com.mercadopago.android.px.internal.datasource.mapper.FromPayerPaymentMethodIdToCardMapper
+import com.mercadopago.android.px.internal.datasource.mapper.FromPayerPaymentMethodToCardMapper
 import com.mercadopago.android.px.internal.features.pay_button.PayButton
 import com.mercadopago.android.px.internal.features.payment_result.presentation.PaymentResultButton
 import com.mercadopago.android.px.internal.repository.*
@@ -35,8 +35,8 @@ internal class RemediesViewModel(
     private val escManagerBehaviour: ESCManagerBehaviour,
     private val amountConfigurationRepository: AmountConfigurationRepository,
     tracker: MPTracker,
-    private val expressMetadataRepository: ExpressMetadataRepository,
-    private val fromPayerPaymentMethodIdToCardMapper: FromPayerPaymentMethodIdToCardMapper
+    private val oneTapItemRepository: OneTapItemRepository,
+    private val fromPayerPaymentMethodToCardMapper: FromPayerPaymentMethodToCardMapper
 ) : BaseViewModelWithState<RemediesViewModel.State>(tracker), Remedies.ViewModel {
 
     val remedyState: MutableLiveData<RemedyState> = MutableLiveData()
@@ -48,8 +48,9 @@ internal class RemediesViewModel(
         val methodIds = getMethodIds()
         val customOptionId = methodIds.customOptionId
         CoroutineScope(Dispatchers.IO).launch {
-            val methodData = expressMetadataRepository.value.find { it.customOptionId == customOptionId }
-            card = fromPayerPaymentMethodIdToCardMapper.map(methodData?.customOptionId)
+            val methodData = oneTapItemRepository.value.first { it.customOptionId == customOptionId }
+            card = fromPayerPaymentMethodToCardMapper.map(
+                PayerPaymentMethodRepository.Key(methodData.customOptionId, methodIds.methodId, methodIds.typeId))
             paymentConfiguration = PaymentConfiguration(methodIds.methodId, methodIds.typeId, customOptionId,
                 card != null, false, getPayerCost(customOptionId, methodIds.typeId))
             withContext(Dispatchers.Main) {

@@ -26,6 +26,9 @@ ext {
 
 subprojects {
     repositories {
+        maven {
+            url "$project.rootDir/libs"
+        }
         mavenLocal()
         google()
         jcenter()

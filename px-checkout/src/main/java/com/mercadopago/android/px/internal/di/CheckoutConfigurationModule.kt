@@ -33,6 +33,15 @@ internal class CheckoutConfigurationModule(context: Context) : ConfigurationModu
             return internalCustomTextsRepository!!
         }
 
+    private var internalApplicationSelectionRepository: ApplicationSelectionRepository? = null
+    val applicationSelectionRepository: ApplicationSelectionRepository
+        get() {
+            return internalApplicationSelectionRepository ?: ApplicationSelectionRepositoryImpl(
+                fileManager, Session.getInstance().oneTapItemRepository).also {
+                internalApplicationSelectionRepository = it
+            }
+        }
+
     override fun reset() {
         super.reset()
         userSelectionRepository.reset()
@@ -40,7 +49,9 @@ internal class CheckoutConfigurationModule(context: Context) : ConfigurationModu
         disabledPaymentMethodRepository.reset()
         payerCostSelectionRepository.reset()
         payerComplianceRepository.reset()
+        applicationSelectionRepository.reset()
         internalChargeRepository = null
         internalCustomTextsRepository = null
+        internalApplicationSelectionRepository = null;
     }
 }

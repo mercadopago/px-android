@@ -13,13 +13,12 @@ import com.mercadopago.android.px.internal.repository.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
-import com.mercadopago.android.px.internal.repository.ExpressMetadataRepository;
+import com.mercadopago.android.px.internal.repository.OneTapItemRepository;
 import com.mercadopago.android.px.internal.repository.CheckoutRepository;
 import com.mercadopago.android.px.internal.repository.ModalRepository;
 import com.mercadopago.android.px.internal.repository.PayerComplianceRepository;
 import com.mercadopago.android.px.internal.repository.PayerPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodRepository;
-import com.mercadopago.android.px.internal.repository.PaymentMethodTypeSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.tracking.TrackingRepository;
@@ -35,7 +34,6 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +49,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
     @NonNull /* default */ DisabledPaymentMethodRepository disabledPaymentMethodRepository;
     @NonNull private final MPTracker tracker;
     @NonNull private final PayerPaymentMethodRepository payerPaymentMethodRepository;
-    @NonNull private final ExpressMetadataRepository expressMetadataRepository;
-    @NonNull private final PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository;
+    @NonNull private final OneTapItemRepository oneTapItemRepository;
     @NonNull private final PaymentMethodRepository paymentMethodRepository;
     @NonNull private final ModalRepository modalRepository;
     @NonNull private final PayerComplianceRepository payerComplianceRepository;
@@ -68,8 +65,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
         @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
         @NonNull final TrackingRepository trackingRepository, @NonNull final MPTracker tracker,
         @NonNull final PayerPaymentMethodRepository payerPaymentMethodRepository,
-        @NonNull final ExpressMetadataRepository expressMetadataRepository,
-        @NonNull final PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository,
+        @NonNull final OneTapItemRepository oneTapItemRepository,
         @NonNull final PaymentMethodRepository paymentMethodRepository,
         @NonNull final ModalRepository modalRepository,
         @NonNull final PayerComplianceRepository payerComplianceRepository,
@@ -83,8 +79,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
         this.trackingRepository = trackingRepository;
         this.tracker = tracker;
         this.payerPaymentMethodRepository = payerPaymentMethodRepository;
-        this.expressMetadataRepository = expressMetadataRepository;
-        this.paymentMethodTypeSelectionRepository = paymentMethodTypeSelectionRepository;
+        this.oneTapItemRepository = oneTapItemRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.modalRepository = modalRepository;
         this.payerComplianceRepository = payerComplianceRepository;
@@ -107,8 +102,7 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
         paymentSettingRepository.configure(checkoutResponse.getConfiguration());
         experimentsRepository.configure(checkoutResponse.getExperiments());
         payerPaymentMethodRepository.configure(checkoutResponse.getPayerPaymentMethods());
-        expressMetadataRepository.configure(checkoutResponse.getOneTapItems());
-        paymentMethodTypeSelectionRepository.configure(getPaymentMethodTypes());
+        oneTapItemRepository.configure(checkoutResponse.getOneTapItems());
         paymentMethodRepository.configure(checkoutResponse.getAvailablePaymentMethods());
         modalRepository.configure(checkoutResponse.getModals());
         payerComplianceRepository.configure(checkoutResponse.getPayerCompliance());
@@ -119,16 +113,6 @@ public class CheckoutRepositoryImpl implements CheckoutRepository {
             new ExpressMetadataToDisabledIdMapper().map(checkoutResponse.getOneTapItems()));
 
         tracker.setExperiments(experimentsRepository.getExperiments());
-    }
-
-    private HashMap<String, String> getPaymentMethodTypes() {
-        final HashMap<String, String> paymentMethodTypeMap = new HashMap<>();
-
-        for (final OneTapItem oneTapItem : expressMetadataRepository.getValue()) {
-            paymentMethodTypeMap.put(oneTapItem.getCustomOptionId(), oneTapItem.getDefaultPaymentMethodType());
-        }
-
-        return paymentMethodTypeMap;
     }
 
     @Override

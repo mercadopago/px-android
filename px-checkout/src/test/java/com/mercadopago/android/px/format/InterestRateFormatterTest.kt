@@ -40,7 +40,7 @@ class InterestRateFormatterTest : BasicRobolectricTest() {
 
         setFontAndColor(actual, "3x \$47,88", PxFont.SEMI_BOLD, ContextCompat.getColor(getContext(), R.color.ui_meli_black))
         setFontAndColor(actual, "(\$143,64)", PxFont.REGULAR, ContextCompat.getColor(getContext(), R.color.ui_meli_grey))
-        InterestFormatter(actual).withText(cftText).apply(getContext())
+        InterestFormatter(actual).withText(cftText!!).apply(getContext())
 
         assertEqualsContent()
     }
@@ -58,7 +58,7 @@ class InterestRateFormatterTest : BasicRobolectricTest() {
 
         setFontAndColor(actual, "3x \$45,88", PxFont.SEMI_BOLD, ContextCompat.getColor(getContext(), R.color.ui_meli_black))
         setFontAndColor(actual, "(\$137,64)", PxFont.REGULAR, ContextCompat.getColor(getContext(), R.color.ui_meli_grey))
-        InterestFormatter(actual).withText(cftnaText).apply(getContext())
+        InterestFormatter(actual).withText(cftnaText!!).apply(getContext())
 
         assertEqualsContent()
     }
@@ -75,7 +75,7 @@ class InterestRateFormatterTest : BasicRobolectricTest() {
 
         setFontAndColor(actual, "3x \$40", PxFont.SEMI_BOLD, ContextCompat.getColor(getContext(), R.color.ui_meli_black))
         setFontAndColor(actual, "Interest-free", PxFont.REGULAR, ContextCompat.getColor(getContext(), R.color.ui_components_success_color))
-        InterestFormatter(actual).withText(cfteaText).apply(getContext())
+        InterestFormatter(actual).withText(cfteaText!!).apply(getContext())
 
         assertEqualsContent()
     }
@@ -91,7 +91,7 @@ class InterestRateFormatterTest : BasicRobolectricTest() {
 
         setFontAndColor(actual, "3x \$47,88", PxFont.SEMI_BOLD, ContextCompat.getColor(getContext(), R.color.ui_meli_black))
         setFontAndColor(actual, "(\$143,64)", PxFont.REGULAR, ContextCompat.getColor(getContext(), R.color.ui_meli_grey))
-        InterestFormatter(actual).withText(cftText).apply(getContext())
+        InterestFormatter(actual).withText(cftText!!).apply(getContext())
         assertEqualsContent()
     }
 

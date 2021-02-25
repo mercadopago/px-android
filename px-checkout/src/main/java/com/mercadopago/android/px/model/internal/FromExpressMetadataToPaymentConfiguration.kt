@@ -1,40 +1,36 @@
 package com.mercadopago.android.px.model.internal
 
+import com.mercadopago.android.px.internal.mappers.Mapper
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository
+import com.mercadopago.android.px.internal.repository.ApplicationSelectionRepository
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState
-import com.mercadopago.android.px.internal.mappers.Mapper
-import com.mercadopago.android.px.internal.repository.PaymentMethodTypeSelectionRepository
 import com.mercadopago.android.px.model.PayerCost
 
 internal class FromExpressMetadataToPaymentConfiguration(
     private val amountConfigurationRepository: AmountConfigurationRepository,
     private val splitSelectionState: SplitSelectionState,
     private val payerCostSelectionRepository: PayerCostSelectionRepository,
-    private val paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository
+    private val applicationSelectionRepository: ApplicationSelectionRepository
 ) : Mapper<OneTapItem, PaymentConfiguration>() {
 
-    override fun map(oneTapItem: OneTapItem): PaymentConfiguration {
-        var payerCost: PayerCost? = null
+    override fun map(value: OneTapItem): PaymentConfiguration {
 
-        val customOptionId = oneTapItem.customOptionId
-        val paymentMethodSelected = paymentMethodTypeSelectionRepository.get(customOptionId);
-        val amountConfiguration = amountConfigurationRepository.getConfigurationFor(
-            customOptionId,
-            paymentMethodSelected)
+        val customOptionId = value.customOptionId
+        val (paymentMethodId, paymentTypeId) = applicationSelectionRepository[customOptionId]?.let { application ->
+            with(application.paymentMethod) { id to type }
+        } ?: value.paymentMethodId to value.paymentTypeId
+
+        var payerCost: PayerCost? = null
+        val amountConfiguration = amountConfigurationRepository.getConfigurationFor(customOptionId, paymentTypeId)
         val splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration!!.allowSplit()
 
-        if (oneTapItem.isCard || oneTapItem.isConsumerCredits) {
+        if (value.isCard || value.isConsumerCredits) {
             payerCost = amountConfiguration!!.getCurrentPayerCost(splitSelectionState.userWantsToSplit(),
-                payerCostSelectionRepository.get(customOptionId, paymentMethodSelected))
+                payerCostSelectionRepository.get(customOptionId, paymentTypeId))
         }
 
-        return PaymentConfiguration(
-            oneTapItem.paymentMethodId,
-            paymentMethodSelected,
-            customOptionId,
-            oneTapItem.isCard,
-            splitPayment,
-            payerCost)
+        return PaymentConfiguration(paymentMethodId, paymentTypeId, customOptionId, value.isCard,
+            splitPayment, payerCost)
     }
 }

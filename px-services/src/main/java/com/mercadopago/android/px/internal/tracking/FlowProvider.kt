@@ -16,7 +16,7 @@ open class FlowProvider(private val sharedPreferences: SharedPreferences) {
     var flowDetail: Map<String, Any>? = null
         get() {
             if (field == null) {
-                field = JsonUtil.getMapFromJson(sharedPreferences.getString(PREF_FLOW_DETAIL, null))
+                field = JsonUtil.getStringMapFromJson(sharedPreferences.getString(PREF_FLOW_DETAIL, null))
             }
             return field
         }

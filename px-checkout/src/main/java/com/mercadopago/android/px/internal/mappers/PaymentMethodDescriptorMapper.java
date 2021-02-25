@@ -3,8 +3,8 @@ package com.mercadopago.android.px.internal.mappers;
 import androidx.annotation.NonNull;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
+import com.mercadopago.android.px.internal.repository.ApplicationSelectionRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
-import com.mercadopago.android.px.internal.repository.PaymentMethodTypeSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.AccountMoneyDescriptorModel;
@@ -32,18 +32,18 @@ public class PaymentMethodDescriptorMapper
     @NonNull private final PaymentSettingRepository paymentSettings;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
     @NonNull private final DisabledPaymentMethodRepository disabledPaymentMethodRepository;
-    @NonNull private final PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository;
+    @NonNull private final ApplicationSelectionRepository applicationSelectionRepository;
     @NonNull private final AmountRepository amountRepository;
 
     public PaymentMethodDescriptorMapper(@NonNull final PaymentSettingRepository paymentSettings,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
-        @NonNull final PaymentMethodTypeSelectionRepository paymentMethodTypeSelectionRepository,
+        @NonNull final ApplicationSelectionRepository applicationSelectionRepository,
         @NonNull final AmountRepository amountRepository) {
         this.paymentSettings = paymentSettings;
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
-        this.paymentMethodTypeSelectionRepository = paymentMethodTypeSelectionRepository;
+        this.applicationSelectionRepository = applicationSelectionRepository;
         this.amountRepository = amountRepository;
     }
 
@@ -51,7 +51,7 @@ public class PaymentMethodDescriptorMapper
     public PaymentMethodDescriptorModel map(@NonNull final OneTapItem oneTapItem) {
         final Map<String, PaymentMethodDescriptorView.Model> paymentMethodDescriptorModelMap = new HashMap<>();
         final List<Application> applications = oneTapItem.getApplications();
-        final String defaultPaymentMethodType = paymentMethodTypeSelectionRepository.get(oneTapItem.getCustomOptionId());
+        final String defaultPaymentMethodType = applicationSelectionRepository.getPaymentMethodTypeId(oneTapItem.getCustomOptionId());
         String paymentMethodType = defaultPaymentMethodType;
 
         if (applications != null && !applications.isEmpty()) {

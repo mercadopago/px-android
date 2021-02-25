@@ -10,7 +10,7 @@ import com.mercadopago.android.px.internal.repository.*
 import com.mercadopago.android.px.internal.repository.ModalRepository
 import com.mercadopago.android.px.internal.repository.PayerPaymentMethodRepository
 import com.mercadopago.android.px.internal.util.TextUtil
-import com.mercadopago.android.px.internal.viewmodel.mappers.CardDrawerCustomViewModelMapper
+import com.mercadopago.android.px.internal.mappers.CardDrawerCustomViewModelMapper
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem.Parameters
 import com.mercadopago.android.px.model.AccountMoneyDisplayInfo
 import com.mercadopago.android.px.model.CustomSearchItem
@@ -24,7 +24,7 @@ internal class PaymentMethodDrawableItemMapper(
     private val cardDrawerCustomViewModelMapper: CardDrawerCustomViewModelMapper,
     private val payerPaymentMethodRepository: PayerPaymentMethodRepository,
     private val modalRepository: ModalRepository,
-    private val paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository
+    private val applicationSelectionRepository: ApplicationSelectionRepository
 ) : NonNullMapper<OneTapItem, DrawableFragmentItem?>() {
 
     override fun map(value: OneTapItem): DrawableFragmentItem? {
@@ -57,7 +57,7 @@ internal class PaymentMethodDrawableItemMapper(
         genericDialogItem: GenericDialogItem?
     ): Parameters {
         val customOptionId = oneTapItem.customOptionId
-        val paymentTypeId = paymentMethodTypeSelectionRepository.get(customOptionId)
+        val paymentTypeId = applicationSelectionRepository.getPaymentMethodTypeId(customOptionId)
         val displayInfo = oneTapItem.displayInfo
         val charge = chargeRepository.getChargeRule(paymentTypeId)
         val (description, issuerName) = customSearchItems.firstOrNull { c -> c.id == customOptionId }?.let {

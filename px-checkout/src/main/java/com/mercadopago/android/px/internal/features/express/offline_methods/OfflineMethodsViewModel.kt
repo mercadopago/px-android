@@ -26,7 +26,7 @@ internal class OfflineMethodsViewModel(
     private val paymentSettingRepository: PaymentSettingRepository,
     private val amountRepository: AmountRepository,
     private val discountRepository: DiscountRepository,
-    private val expressMetadataRepository: ExpressMetadataRepository,
+    private val oneTapItemRepository: OneTapItemRepository,
     private val payerComplianceRepository: PayerComplianceRepository,
     tracker: MPTracker) : BaseViewModel(tracker), OfflineMethods.ViewModel {
 
@@ -40,7 +40,7 @@ internal class OfflineMethodsViewModel(
     override fun onViewLoaded(): LiveData<OfflineMethods.Model> {
         val liveData = MutableLiveData<OfflineMethods.Model>()
         CoroutineScope(Dispatchers.IO).launch {
-            val offlineMethods = expressMetadataRepository.value
+            val offlineMethods = oneTapItemRepository.value
                 .firstOrNull { express -> express.isOfflineMethods }?.offlineMethods
             val bottomDescription = offlineMethods?.displayInfo?.bottomDescription
             val defaultPaymentTypeId = offlineMethods?.paymentTypes?.firstOrNull()?.id ?: TextUtil.EMPTY

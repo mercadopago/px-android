@@ -107,7 +107,7 @@ class ExpressPaymentPresenterTest {
     private lateinit var tracker: MPTracker
 
     @Mock
-    private lateinit var expressMetadataRepository: ExpressMetadataRepository
+    private lateinit var oneTapItemRepository: OneTapItemRepository
 
     @Mock
     private lateinit var payerPaymentMethodRepository: PayerPaymentMethodRepository
@@ -116,7 +116,7 @@ class ExpressPaymentPresenterTest {
     private lateinit var modalRepository: ModalRepository
 
     @Mock
-    private lateinit var paymentMethodTypeSelectionRepository: PaymentMethodTypeSelectionRepository
+    private lateinit var applicationSelectionRepository: ApplicationSelectionRepository
 
     private lateinit var expressPaymentPresenter: ExpressPaymentPresenter
 
@@ -132,24 +132,22 @@ class ExpressPaymentPresenterTest {
         `when`(paymentSettingRepository.checkoutPreference).thenReturn(preference)
         `when`(paymentSettingRepository.advancedConfiguration).thenReturn(advancedConfiguration)
         `when`(advancedConfiguration.dynamicDialogConfiguration).thenReturn(dynamicDialogConfiguration)
-        `when`(paymentMethodTypeSelectionRepository.get(anyString())).thenReturn("credit_card")
         `when`(oneTapItem.isCard).thenReturn(true)
         `when`(oneTapItem.card).thenReturn(cardMetadata)
         `when`(cardMetadata.displayInfo).thenReturn(mock(CardDisplayInfo::class.java))
         `when`(oneTapItem.customOptionId).thenReturn("123")
-        `when`(oneTapItem.getDefaultPaymentMethodType()).thenReturn("credit_card")
         `when`(oneTapItem.status).thenReturn(mock(StatusMetadata::class.java))
         `when`(discountRepository.getCurrentConfiguration()).thenReturn(discountConfigurationModel)
         `when`(discountRepository.getConfigurationFor("123", "credit_card")).thenReturn(discountConfigurationModel)
         `when`(amountConfigurationRepository.getConfigurationFor("123", "credit_card")).thenReturn(amountConfiguration)
-        `when`(expressMetadataRepository.value).thenReturn(listOf(oneTapItem))
+        `when`(oneTapItemRepository.value).thenReturn(listOf(oneTapItem))
+        `when`(applicationSelectionRepository.getPaymentMethodTypeId(anyString())).thenReturn("credit_card")
         expressPaymentPresenter = ExpressPaymentPresenter(paymentSettingRepository, disabledPaymentMethodRepository,
-            payerCostSelectionRepository, discountRepository, amountRepository, checkoutRepository,
+            payerCostSelectionRepository, applicationSelectionRepository, discountRepository, amountRepository, checkoutRepository,
             amountConfigurationRepository, chargeRepository, escManagerBehaviour, paymentMethodDrawableItemMapper,
             experimentsRepository, payerComplianceRepository, trackingRepository,
             mock(PaymentMethodDescriptorMapper::class.java), mock(CustomTextsRepository::class.java),
-            mock(AmountDescriptorMapper::class.java), tracker, expressMetadataRepository, payerPaymentMethodRepository,
-            paymentMethodTypeSelectionRepository,
+            mock(AmountDescriptorMapper::class.java), tracker, oneTapItemRepository, payerPaymentMethodRepository,
             modalRepository)
         verifyAttachView()
     }

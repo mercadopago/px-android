@@ -41,7 +41,7 @@ internal class ViewModelFactory : ViewModelProvider.Factory {
                 OfflineMethodsViewModel(paymentSetting,
                     session.amountRepository,
                     session.discountRepository,
-                    session.expressMetadataRepository,
+                    session.oneTapItemRepository,
                     session.configurationModule.payerComplianceRepository,
                     session.tracker)
             }
@@ -56,7 +56,7 @@ internal class ViewModelFactory : ViewModelProvider.Factory {
                 val displayDataUseCase = DisplayDataUseCase(
                     BusinessSecurityCodeDisplayDataMapper(),
                     session.tracker,
-                    session.expressMetadataRepository)
+                    session.oneTapItemRepository)
 
                 SecurityCodeViewModel(
                     tokenizeUseCase,
