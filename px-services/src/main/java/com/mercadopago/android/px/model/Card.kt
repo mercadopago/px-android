@@ -6,6 +6,7 @@ import com.mercadopago.android.px.internal.core.extensions.readNullableInt
 import com.mercadopago.android.px.internal.core.extensions.writeDate
 import com.mercadopago.android.px.internal.core.extensions.writeNullableInt
 import com.mercadopago.android.px.internal.util.KParcelable
+import com.mercadopago.android.px.internal.helper.SecurityCodeHelper
 import com.mercadopago.android.px.internal.util.parcelableCreator
 import java.util.*
 
@@ -58,7 +59,7 @@ class Card @Deprecated("") constructor() : CardInformation, KParcelable {
     var securityCode: SecurityCode? = null
     var escStatus: String? = null
 
-    fun isSecurityCodeRequired() = securityCode?.length != 0
+    fun isSecurityCodeRequired() = SecurityCodeHelper.isRequired(securityCode)
     fun getSecurityCodeLocation() = securityCode?.cardLocation ?: CARD_DEFAULT_SECURITY_CODE_LOCATION
     override fun getSecurityCodeLength() = securityCode?.length
 

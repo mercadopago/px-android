@@ -209,9 +209,8 @@ public class PaymentService implements PaymentRepository {
         }
     }
 
-    private boolean shouldPayWithCvv(@NonNull final CardInformation card) {
-        final int securityCodeLength = card.getSecurityCodeLength() != null ? card.getSecurityCodeLength() : 0;
-        return securityCodeLength > 0;
+    private boolean shouldPayWithCvv(@NonNull final Card card) {
+        return card.isSecurityCodeRequired();
     }
 
     private void payWithoutCvv(@NonNull final Card card) {

@@ -31,7 +31,7 @@ public class Setting implements Parcelable, Serializable {
     }
 
     @Nullable
-    public static Setting getSettingByBin(final Collection<Setting> settings, @Nullable final String bin) {
+    public static Setting getSettingByBin(@Nullable final Collection<Setting> settings, @Nullable final String bin) {
 
         Setting selectedSetting = null;
 
